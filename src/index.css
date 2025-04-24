@@ -1,0 +1,220 @@
+@import "tailwindcss";
+
+/* Default Light Theme */
+:root {
+    --custom-button: #4caf50;
+
+    --bg-color: #f3f4f6;
+    --text-color: #000000; /* #1E2939 or #101828 */
+    --button-bg: #4caf50;
+    --button-text: #f5f5f5;
+    --bg-color-container: #eff6ff;
+    --bg-color-container-text: #eff6ff;
+    --bg-color-border: #e5e7eb;
+    --link-text-color: #000000;
+
+
+    --bg-card-color: #f5f5f5;
+    --bg-card-color-2: #f5f5f5;
+    --bg-card-border: #f5f5f5;
+    --bg-card-shadow: 1px 1px 8px #99a1af; /* #6a7282  #d1d5dc*/
+
+    --selector-color: #e5e7eb;
+
+    --border-color: gray;
+}
+
+/* Dark Theme */
+[data-theme='dark'] {
+    --custom-button: #4BA0E8;
+
+    --bg-color: #1E2939; /* #1E2939 or #101828 */
+    --text-color: #f3f4f6;
+     --button-bg: #4BA0E8; /* #1e88e5 */
+    --button-text: #f5f5f5;
+    --bg-color-container: #101828;
+    --bg-color-container-text: #f3f4f6;
+    --bg-color-border: #1E2939;
+    --link-text-color: #f3f4f6;
+    --bg-shadow: 3px 3px 8px #1E2939;
+
+    --bg-card-color: #1E2939;
+    --bg-card-color-2: #101828;
+    --bg-card-border: #314158;
+    --bg-card-shadow: 1px 1px 8px #314158;
+
+    --selector-color: #101828;
+
+    --border-color: gray;
+}
+
+/* Apply variables */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    min-height: 100vh;
+}
+
+.hero-bg {
+    background: url(/handyman-1.jpg);
+    background-position: 80% center; /* 80% horizontally, center vertically */
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.highlight-selector {
+    background-color: var(--selector-color);
+}
+
+.link-text-color-no-style {
+    color: var(--link-text-color);
+}
+
+.border-color-input {
+    border: 1px solid var(--border-color);
+}
+
+.bg-card-color {
+    background-color: var(--bg-card-color)
+}
+
+.bg-card-color-2 {
+    background-color: var(--bg-card-color-2)
+}
+
+.bg-input-card-border {
+    background-color: var(--bg-card-color);
+    border: 1px solid var(--bg-card-border);
+    box-shadow: var(--bg-card-shadow);
+}
+
+.bg-card-border {
+    border: 1px solid var(--bg-card-border);
+    box-shadow: var(--bg-card-shadow);
+}
+
+.bg-card-border-2 {
+    background-color: var(--bg-card-color-2);
+    border: 1px solid var(--bg-card-border);
+    box-shadow: var(--bg-card-shadow);
+}
+
+.bg-color-container {
+    background-color: var(--bg-color-container);
+    color: var(--bg-color-container-tex);
+    border: 1px solid var(--bg-color-border);
+}
+
+button {
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    border: none;
+    padding: 5px 20px 5px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+button:hover {
+opacity: 0.9;
+}
+
+* {
+    font-family: "Montserrat", sans-serif;
+}
+
+a {
+    text-decoration: none !important;
+}
+
+a.navbar-links:hover {
+    color: #4BA0E8;
+    transition: color 0.4s;
+}
+
+.custom-btn-container {
+    color: #FFF;
+    position: relative;
+    cursor: pointer;
+    border-radius: 15px;
+    overflow: hidden !important;
+    border: none;
+    padding: 2px 15px 2px 15px;
+}
+.custom-btn-container:before {
+    content: '';
+    position: absolute;
+    height: 200px;
+    width: 80px;
+    background: #F3F3F3;
+    box-shadow: 0 0 10px #FFF;
+    filter: blur(1px);
+    opacity: 0.2;
+    top: -100px;
+    transform: rotate(-20deg) translate(-200px);
+}
+
+.custom-btn {
+    background: var(--custom-button);
+    color: white;
+}
+.custom-btn:hover {
+    color: white;
+}
+
+.custom-btn-container:hover:before {
+    animation: flowOnce 0.8s forwards;
+}
+
+@keyframes flowOnce {
+    0% {
+        transform: rotate(-20deg) translate(-200px);
+    }
+    100% {
+        transform: rotate(-20deg) translate(200px, 70px);
+    }
+}
+
+.login-btn-container {
+    color: #FFF;
+    position: relative;
+    cursor: pointer;
+    border-radius: 5px;
+    overflow: hidden !important;
+    border: none;
+    padding: 5px 20px 5px 20px;
+}
+.login-btn-container:before {
+    content: '';
+    position: absolute;
+    height: 200px;
+    width: 80px;
+    background: #F3F3F3;
+    box-shadow: 0 0 10px #FFF;
+    filter: blur(1px);
+    opacity: 0.2;
+    top: -100px;
+    transform: rotate(-20deg) translate(-300px);
+}
+
+.login-btn {
+    background: var(--custom-button);
+    color: white;
+}
+.login-btn:hover {
+    color: white;
+}
+
+.login-btn-container:hover:before {
+    animation: flowOnce1 1s forwards;
+}
+
+@keyframes flowOnce1 {
+    0% {
+        transform: rotate(-20deg) translate(-300px);
+    }
+    100% {
+        transform: rotate(-20deg) translate(300px, 70px);
+    }
+}

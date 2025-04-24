@@ -1,0 +1,53 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependency directories
+node_modules/
+.pnp/
+.pnp.js
+
+# Production builds
+dist/
+build/
+dist-ssr/
+
+# Local env files (these often contain API keys or config)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.venv
+.venv/
+
+# Cache
+.cache/
+.next/
+out/
+.vite/
+coverage/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDEs and editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Optional: lock files (if you're using one package manager only)
+# Uncomment one of the below if you're not using the others:
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml

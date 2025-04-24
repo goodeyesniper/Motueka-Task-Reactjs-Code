@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+
+.ul-style {
+    list-style: none;
+}
+
+/* Navbar */
+.navbar-container {
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.3);
+    /* background-color: var(--navbar-bg-color) !important; */
+
+}
+
+.navbar-ul {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.navbar-li {
+    height: 50px;
+}
+
+.navbar-links {
+    height: 100% !important;
+    padding: 0 10px !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+.navbar .navbar-li:first-child {
+    margin-right: auto !important;
+}
+
+.nav-sidebar {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    /* height: 100vh; */
+    width: 0;
+    height: 0;
+
+    /* rgba(255, 255, 255, 0.2); */
+    background-color: var(--bg-color-container);
+    box-shadow: var(--bg-card-shadow);
+
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: flex-start;
+    z-index: 1000;
+
+}
+
+@keyframes diagonalExpand {
+    from {
+        width: 0;
+        height: 0;
+    }
+    to {
+        width: 200px;
+        height: auto;
+    }
+}
+
+.nav-sidebar.show-sidebar {
+    animation: diagonalExpand 0.2s ease forwards;
+}
+
+.nav-sidebar.hide-sidebar {
+    width: 0;
+    height: 0;
+}
+
+.nav-li-sidebar {
+    padding-left: 10px !important;
+}
+
+.nav-li-sidebar, .nav-link-sidebar {
+    width: 100%;
+}
+
+/* .nav-li-sidebar:hover {
+    background-color: #f0f0f0 !important;
+} */
+
+.menu-button {
+    display: none;
+}
+
+@media (max-width: 700px) {
+    .hideOnMobile {
+        display: none;
+    }
+    .menu-button {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        padding: 0 10px;
+    }
+}

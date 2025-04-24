@@ -1,0 +1,77 @@
+import { Link } from 'react-router-dom'
+import React, { useState, useEffect, useRef } from "react";
+
+const NotificationBell = () => {
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const [notifications, setNotifications] = useState([]); // Example: Empty array initially
+  const dropdownRef = useRef(null); // Ref for the dropdown
+
+  // Toggle Dropdown Visibility
+  const toggleDropdown = () => {
+    setIsDropdownVisible(!isDropdownVisible);
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownVisible(false); // Close dropdown if click is outside
+      }
+    };
+
+    // Add event listener
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    return () => {
+      // Cleanup event listener
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
+
+  return (
+    <div className="relative">
+      {/* Notification Bell */}
+      <li className="navbar-li hideOnMobile">
+        <Link to="#" onClick={toggleDropdown} className="navbar-links relative">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="24px"
+            viewBox="0 -960 960 960"
+            width="24px"
+            fill="#0066A2"
+          >
+            <path d="M160-200v-80h80v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h80v80H160Zm320-300Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM320-280h320v-280q0-66-47-113t-113-47q-66 0-113 47t-47 113v280Z" />
+          </svg>
+        </Link>
+      </li>
+
+      {/* Dropdown Notifications */}
+      {isDropdownVisible && (
+        <div
+          ref={dropdownRef} // Attach ref to dropdown
+          className="absolute top-12 left-1/2 transform -translate-x-1/2 bg-white shadow-lg rounded w-80 max-h-96 overflow-y-auto z-50"
+        >
+          <div className="p-4">
+            <h2 className="text-lg font-bold text-gray-700">Notifications</h2>
+          </div>
+          <div className="border-t border-gray-300">
+            {notifications.length > 0 ? (
+              notifications.map((notification, index) => (
+                <div
+                  key={index}
+                  className="p-4 hover:bg-gray-100 cursor-pointer"
+                >
+                  <p className="text-gray-600">{notification}</p>
+                </div>
+              ))
+            ) : (
+              <div className="p-4 text-gray-500">No notifications to show</div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default NotificationBell;
