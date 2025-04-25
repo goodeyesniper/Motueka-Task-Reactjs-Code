@@ -1,13 +1,3 @@
-# React + Vite
+## Project Inspiration
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-# Motueka-Task-Reactjs-Code
+### This project was inspired by a desire to support our small town and community — especially the elderly who live alone. I noticed that many of our neighbors are seniors who often struggle with day-to-day tasks at home. This led me to an idea: why not create a platform where they can go online to request help? In return, they could offer a small payment as compensation. It’s a way for people to receive the help they need, while also providing an opportunity for others to earn a little money in the process.
