@@ -124,11 +124,11 @@ const Home = () => {
 
             <div className="container-fluid flex justify-center mt-10 py-10 bg-color-container">
                 <div className="container max-w-7xl px-2 place-items-center mt-10 pb-15">
-                    <h1 className='text-2xl font-bold text-center pb-10'>How does Motueka Tasks work?</h1>
+                    <h1 className='text-2xl font-bold text-center pb-10'>How does Motueka Task work?</h1>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 mb-5 py-2 place-items-center">
                         <div className="flex flex-col items-center justify-center rounded-[8px] p-3 bg-card-color bg-card-border">
                             <h1 className='text-[1.2rem] text-center font-bold'>Post your task</h1>
-                            <p className='py-2 text-center'>Share your task requirements on Ezy Peazy. It's always free to post tasks.</p>
+                            <p className='py-2 text-center'>Share your task requirements on Motueka Task. It's always free to post tasks.</p>
                         </div>
                         <div className="flex flex-col items-center justify-center rounded-[8px] p-3 bg-card-color bg-card-border">
                             <h1 className='text-[1.2rem] text-center font-bold'>Review your offers</h1>
@@ -146,8 +146,8 @@ const Home = () => {
             </div>
             <div className="container-fluid flex justify-center py-10">
                 <div className="container max-w-3xl px-2 place-items-center">
-                    <h1 className='text-2xl font-bold text-center pt-10 pb-5'>Why use Motueka Tasks?</h1>
-                    <h1 className='text-[1.2rem] text-center pb-5'>Getting tasks done with Motueka Tasks is convenient, budget friendly, efficient and secure.</h1>
+                    <h1 className='text-2xl font-bold text-center pt-10 pb-5'>Why use Motueka Task?</h1>
+                    <h1 className='text-[1.2rem] text-center pb-5'>Getting tasks done with Motueka Task is convenient, budget friendly, efficient and secure.</h1>
                     <div className="grid grid-cols-1 sm:grid-cols-4 gap-y-4 gap-x-0 sm:gap-x-4 mb-5 py-2 place-items-center">
                         <div className="flex flex-col rounded-full p-5 bg-card-color-2 bg-card-border">
                             <svg xmlns="http://www.w3.org/2000/svg" height="80px" viewBox="0 -960 960 960" width=" 80px" fill="#0066A2"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h168q13-36 43.5-58t68.5-22q38 0 68.5 22t43.5 58h168q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm80-80h280v-80H280v80Zm0-160h400v-80H280v80Zm0-160h400v-80H280v80Zm200-190q13 0 21.5-8.5T510-820q0-13-8.5-21.5T480-850q-13 0-21.5 8.5T450-820q0 13 8.5 21.5T480-790ZM200-200v-560 560Z"/></svg>
@@ -172,7 +172,7 @@ const Home = () => {
                         </div>
                         <div className="col-span-3 flex flex-col rounded-[8px] p-3 bg-card-color-2 bg-card-border justify-center items-center sm:items-start text-center sm:text-start">
                             <h1 className='text-[1.2rem] font-bold pb-2'>You get to choose</h1>
-                            <p>Motueka Tasks gives you the freedom to select the tasker who is the best fit for your task.</p>
+                            <p>Motueka Task gives you the freedom to select the tasker who is the best fit for your task.</p>
                         </div>
                     </div>
                 </div>

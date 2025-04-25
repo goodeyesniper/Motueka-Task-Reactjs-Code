@@ -97,7 +97,7 @@ const Navbar = () => {
                         {/* Navigation Big Screen */}
                         <ul className='navbar-ul ul-style flex'>
                             {/* Always show */}
-                            <li className='navbar-li'><Link to='/' className='navbar-links'>Motueka Tasks</Link></li>
+                            <li className='navbar-li'><Link to='/' className='navbar-links'>Motueka Task</Link></li>
 
                             {/* Show when logged in */}
                             {isAuthenticated && (

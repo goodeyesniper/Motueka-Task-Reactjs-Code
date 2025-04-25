@@ -8,7 +8,7 @@ const Footer = () => {
                 <div className="container max-w-5xl px-2 mt-10 pb-15">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 items-start sm:items-start place-items-start sm:place-items-center pl-10">
                         <div className="flex flex-col">
-                            <h1 className='text-[1.2rem] font-bold pb-2'>Motueka Tasks</h1>
+                            <h1 className='text-[1.2rem] font-bold pb-2'>Motueka Task</h1>
                             <p><Link to="#">About Us</Link></p>
                             <p><Link to="#">Contact Us</Link></p>
                             <p><Link to="#">Privacy Policy</Link></p>
