@@ -31,6 +31,7 @@ const BrowseTask = () => {
         }
 
         const data = await response.json();
+        console.log(data)
         setTasks(data);
       } catch (err) {
         console.error("Error fetching tasks:", err);

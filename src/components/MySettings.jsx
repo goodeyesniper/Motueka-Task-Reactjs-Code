@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react"
-import { updateProfile, changePassword, fetchUserProfile, uploadProfileImage } from './MySettingsUpdater'
+import { updateProfile, changePassword, fetchUserProfile, uploadProfileImage, fetchUserProfileData, saveUserProfile, fetchAlbumsWithImages, createAlbum, addImageToAlbum, deleteAlbum, } from './MySettingsUpdater'
 import ImageUploadDialog from "./ImageUploadDialog";
+import axios from "axios";
+import AlbumGrid from './AlbumGrid'
 
 
 const MySettings = () => {
@@ -11,47 +13,183 @@ const MySettings = () => {
   const handleSelection = (item) => {
     setSelectedItem(item);
   };
-
-  const [charCount, setCharCount] = useState(0); // State for character count
-
-  const handleInputChange = (e) => {
-    setCharCount(e.target.value.length); // Update character count dynamically
-  };
   
   const [isCreatingAlbum, setIsCreatingAlbum] = useState(false);
   const [albumTitle, setAlbumTitle] = useState("");
   const [albums, setAlbums] = useState([]);
   const [selectedAlbum, setSelectedAlbum] = useState(null);
   const [notification, setNotification] = useState("");
+  const [imageFile, setImageFile] = useState(null);
+  const [imageDescription, setImageDescription] = useState("");
 
-  const handleCreateAlbum = () => {
+  useEffect(() => {
+    const loadAlbums = async () => {
+      try {
+        const data = await fetchAlbumsWithImages();
+        setAlbums(data);
+      } catch (err) {
+        // handle error
+      }
+    };
+  
+    loadAlbums();
+  }, []);
+
+  // useEffect(() => {
+  //   const fetchAlbums = async () => {
+  //     try {
+  //       const res = await axios.get("http://127.0.0.1:8000/api/albums/", {
+  //         headers: {
+  //           Authorization: `Token ${localStorage.getItem("token")}`,
+  //         },
+  //       });
+  //       const albumsWithImages = await Promise.all(res.data.map(async (album) => {
+  //         const imageRes = await axios.get(`http://127.0.0.1:8000/api/album-images/?album=${album.id}`, {
+  //           headers: {
+  //             Authorization: `Token ${localStorage.getItem("token")}`,
+  //           },
+  //         });
+  //         return { ...album, images: imageRes.data };
+  //       }));
+  //       setAlbums(albumsWithImages);
+  //     } catch (error) {
+  //       console.error("Error fetching albums:", error);
+  //     }
+  //   };
+  
+  //   fetchAlbums();
+  // }, []);
+  
+  const handleCreateAlbum = async () => {
     if (!albumTitle.trim()) {
       setNotification("Album title cannot be empty.");
       return;
     }
-    setAlbums([...albums, { title: albumTitle, images: [] }]);
-    setAlbumTitle("");
-    setIsCreatingAlbum(false);
-    setNotification("");
+  
+    try {
+      const newAlbum = await createAlbum(albumTitle);
+      setAlbums([...albums, newAlbum]);
+      setAlbumTitle("");
+      setIsCreatingAlbum(false);
+      setNotification("");
+    } catch {
+      setNotification("Failed to create album.");
+    }
   };
 
-  const handleDeleteAlbum = (albumIndex) => {
-    const updatedAlbums = albums.filter((_, index) => index !== albumIndex);
-    setAlbums(updatedAlbums);
-  };
+  // const handleCreateAlbum = async () => {
+  //   if (!albumTitle.trim()) {
+  //     setNotification("Album title cannot be empty.");
+  //     return;
+  //   }
+  
+  //   try {
+  //     const res = await axios.post("http://127.0.0.1:8000/api/albums/", {
+  //       title: albumTitle,
+  //     }, {
+  //       headers: {
+  //         Authorization: `Token ${localStorage.getItem("token")}`,
+  //       },
+  //     });
+  
+  //     setAlbums([...albums, { ...res.data, images: [] }]);
+  //     setAlbumTitle("");
+  //     setIsCreatingAlbum(false);
+  //     setNotification("");
+  //   } catch (error) {
+  //     console.error("Error creating album:", error);
+  //     setNotification("Failed to create album.");
+  //   }
+  // };
 
-  const handleAddImage = (albumIndex, file, description) => {
-    const updatedAlbums = [...albums];
-    const reader = new FileReader();
-
-    // Read the file and add to album once loaded
-    reader.onload = () => {
-      updatedAlbums[albumIndex].images.push({ image: reader.result, description });
+  const handleAddImage = async () => {
+    if (!imageFile || selectedAlbum === null) return;
+  
+    try {
+      const albumId = albums[selectedAlbum].id;
+      const newImage = await addImageToAlbum(albumId, imageFile, imageDescription);
+  
+      const updatedAlbums = albums.map((album, index) => {
+        if (index === selectedAlbum) {
+          return {
+            ...album,
+            images: [...album.images, newImage], // create new array, not push
+          };
+        }
+        return album;
+      });
+  
       setAlbums(updatedAlbums);
-    };
-    reader.readAsDataURL(file);
+      setImageFile(null);
+      setImageDescription("");
+      setSelectedAlbum(null);
+    } catch {
+      setNotification("Failed to upload image.");
+    }
+  };
+  
+
+  // const handleAddImage = async () => {
+  //   if (!imageFile || selectedAlbum === null) return;
+  
+  //   const formData = new FormData();
+  //   formData.append("album", albums[selectedAlbum].id);
+  //   formData.append("image", imageFile);
+  //   formData.append("description", imageDescription);
+  
+  //   try {
+  //     const res = await axios.post("http://127.0.0.1:8000/api/album-images/", formData, {
+  //       headers: {
+  //         Authorization: `Token ${localStorage.getItem("token")}`,
+  //         "Content-Type": "multipart/form-data",
+  //       },
+  //     });
+  
+  //     const updatedAlbums = [...albums];
+  //     updatedAlbums[selectedAlbum].images.push(res.data);
+  //     setAlbums(updatedAlbums);
+  //     setImageFile(null);
+  //     setImageDescription("");
+  //     setSelectedAlbum(null);
+  //   } catch (error) {
+  //     console.error("Error uploading image:", error);
+  //     setNotification("Failed to upload image.");
+  //   }
+  // };
+
+  const handleDeleteAlbum = async (albumIndex) => {
+    const album = albums[albumIndex];
+    const confirmed = window.confirm("Are you sure you want to delete this album?");
+    if (!confirmed) return;
+  
+    try {
+      await deleteAlbum(album.id);
+      setAlbums(albums.filter((_, index) => index !== albumIndex));
+    } catch {
+      setNotification("Failed to delete album.");
+    }
   };
 
+  // const handleDeleteAlbum = async (albumIndex) => {
+  //   const albumToDelete = albums[albumIndex];
+
+  //   const confirmed = window.confirm("Are you sure you want to delete this album?");
+  //     if (!confirmed) return;
+
+  //   try {
+  //     await axios.delete(`http://127.0.0.1:8000/api/albums/${albumToDelete.id}/`, {
+  //       headers: {
+  //         Authorization: `Token ${localStorage.getItem("token")}`,
+  //       },
+  //     });
+  
+  //     const updatedAlbums = albums.filter((_, index) => index !== albumIndex);
+  //     setAlbums(updatedAlbums);
+  //   } catch (error) {
+  //     console.error("Error deleting album:", error);
+  //     setNotification("Failed to delete album.");
+  //   }
+  // };  
 
   const [selectedFilter, setSelectedFilter] = useState("None");
   const [notifications, setNotifications] = useState([
@@ -226,6 +364,56 @@ const MySettings = () => {
     }
   };
 
+  const [aboutMe, setAboutMe] = useState("");
+  const charCount2 = aboutMe.length;
+  const [taskPreferences, setTaskPreferences] = useState([]);
+  const [expertise, setExpertise] = useState([]);
+  const [profileId, setProfileId] = useState(null); // Needed for PUT
+
+  const toggleCheckbox = (value, state, setState) => {
+    if (state.includes(value)) {
+      setState(state.filter((item) => item !== value));
+    } else {
+      setState([...state, value]);
+    }
+  };
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const profile = await fetchUserProfileData();
+        if (profile) {
+          setProfileId(profile.id);
+          setAboutMe(profile.about_me);
+          setExpertise(profile.expertise || []);
+          setTaskPreferences(profile.task_preferences || []);
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      }
+    };
+  
+    fetchProfile();
+  }, []);
+
+  const handleSave = async () => {
+    const payload = {
+      about_me: aboutMe,
+      expertise: expertise,
+      task_preferences: taskPreferences
+    };
+  
+    try {
+      const newProfile = await saveUserProfile(payload, profileId);
+      if (newProfile?.id) {
+        setProfileId(newProfile.id);
+      }
+      alert("Profile saved successfully!");
+    } catch (error) {
+      console.error("Error saving profile:", error);
+    }
+  };  
+  
   // Step 3: Content based on the selected item
   const renderContent = () => {
     switch (selectedItem) {
@@ -234,13 +422,13 @@ const MySettings = () => {
             <>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2">
                     <div className="col-span-3">
-                        <h1 className="font-bold">Personal Details</h1>
+                        <h1 className="font-bold">Personal Information</h1>
                         <p className="text-xs">Manage your personal information</p>
                     </div>
                     <div className="flex flex-col col-span-3 md:col-span-1 place-items-center">
                         <p className="pb-10">Your display picture</p>
-                        <div className="pb-10">
-                          <img src={userData.image_url ? userData.image_url : "https://placehold.co/120x120.png"} alt="Profile" className="rounded-full w-[120px] h-[120px]" />
+                        <div className="w-[120px] h-[120px] mb-5">
+                          <img src={userData.image_url ? userData.image_url : "https://placehold.co/120x120.png"} alt="Profile" className="rounded-full object-cover w-full h-full" />
                         </div>
                         <div>
                             <button className="custom-btn-container custom-btn" onClick={handleOpenDialog}>Upload Photo</button>
@@ -305,18 +493,17 @@ const MySettings = () => {
                 <p className="pt-10 pb-2 font-bold">What are you here for?</p>
                 <div className="flex flex-col space-y-4 pl-2">
                   <ul>
-                    <li className="flex items-center space-x-3 py-1">
-                      <input type="checkbox" className="form-checkbox h-4 w-4" />
-                      <span>I need help with tasks</span>
-                    </li>
-                    <li className="flex items-center space-x-3 py-1">
-                      <input type="checkbox" className="form-checkbox h-4 w-4" />
-                      <span>I'm a tasker</span>
-                    </li>
-                    <li className="flex items-center space-x-3 py-1">
-                      <input type="checkbox" className="form-checkbox h-4 w-4" />
-                      <span>Just looking around</span>
-                    </li>
+                    {["I need help with tasks", "I'm a tasker", "Just looking around"].map((item) => (
+                      <li key={item} className="flex items-center space-x-3 py-1">
+                        <input
+                          type="checkbox"
+                          className="form-checkbox h-4 w-4"
+                          checked={taskPreferences.includes(item)}
+                          onChange={() => toggleCheckbox(item, taskPreferences, setTaskPreferences)}
+                        />
+                        <span>{item}</span>
+                      </li>
+                    ))}
                   </ul>
                 </div>
         
@@ -327,11 +514,12 @@ const MySettings = () => {
                   rows={4}
                   placeholder="Write about yourself here..."
                   className="w-full border border-gray-300 p-2"
-                  onChange={handleInputChange} // Listen to changes in the text area
+                  onChange={(e) => setAboutMe(e.target.value)}
+                  value={aboutMe}
                 ></textarea>
                 {/* Dynamic character count */}
                 <div className="text-right text-sm text-gray-500">
-                  {charCount}/2000 max characters
+                  {charCount2}/2000 max characters
                 </div>
         
                 {/* My Expertise Section */}
@@ -353,16 +541,16 @@ const MySettings = () => {
                     "Writing",
                     "Building & Construction",
                     "Others",
-                  ].map((expertise) => (
-                    <div key={expertise} className="flex items-center space-x-3">
-                      <input type="checkbox" className="form-checkbox h-4 w-4" />
-                      <span>{expertise}</span>
+                  ].map((skill) => (
+                    <div key={skill} className="flex items-center space-x-3">
+                      <input type="checkbox" className="form-checkbox h-4 w-4" checked={expertise.includes(skill)} onChange={() => toggleCheckbox(skill, expertise, setExpertise)} />
+                      <span>{skill}</span>
                     </div>
                   ))}
                 </div>
               </div>
               <div className="py-10 text-center sm:text-start">
-                <button className="custom-btn-container custom-btn">Save changes</button>
+                <button className="custom-btn-container custom-btn" onClick={handleSave}>Save Changes</button>
               </div>
             </>
           );
@@ -371,120 +559,23 @@ const MySettings = () => {
       case "My Portfolio":
         return (
             <>
-                <div className="w-full pt-2">
-                    <h1 className="border-b mb-2">My Portfolio</h1>
-
-                    {/* Notification Area */}
-                    {notification && (
-                        <div className="text-red-500 text-sm pb-2">{notification}</div>
-                    )}
-
-                    {/* Albums */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-                        {albums.map((album, index) => (
-                        <div key={index} className="bg-card-color-2 bg-card-border p-2 rounded">
-                            <h2 className="font-bold">{album.title}</h2>
-                            <button
-                            onClick={() => setSelectedAlbum(index)}
-                            className="mt-2 ml-2 text-blue-500"
-                            >
-                            + Add Images
-                            </button>
-                            <button
-                            onClick={() => handleDeleteAlbum(index)}
-                            className="mt-2 ml-2 text-red-500"
-                            >
-                            Delete Album
-                            </button>
-                            <div className="pt-2">
-                            {album.images.map((imageData, imgIndex) => (
-                                <div key={imgIndex} className="pt-1">
-                                <img
-                                    src={imageData.image}
-                                    alt="album item"
-                                    className="w-full h-32 object-cover"
-                                />
-                                <p className="text-sm pt-1">{imageData.description}</p>
-                                </div>
-                            ))}
-                            </div>
-                        </div>
-                        ))}
-                    </div>
-
-                    {/* + Icon to Create Album */}
-                    <div className="pt-4">
-                        <button
-                        className="custom-btn-container custom-btn border border-gray-400 rounded-full w-10 h-10 flex items-center justify-center text-2xl"
-                        onClick={() => setIsCreatingAlbum(true)}
-                        >
-                        +
-                        </button>
-                    </div>
-
-                    {/* Album Creation Form */}
-                    {isCreatingAlbum && (
-                        <div className="pt-4 bg-card-color-2 bg-card-border p-4 rounded w-full max-w-sm">
-                        <input
-                            type="text"
-                            placeholder="Album title"
-                            value={albumTitle}
-                            onChange={(e) => setAlbumTitle(e.target.value)}
-                            className="w-full border-color-input p-2 rounded"
-                        />
-                        <div className="flex justify-between pt-4">
-                            <button
-                            onClick={handleCreateAlbum}
-                            className="bg-blue-500 text-white px-4 py-2 rounded"
-                            >
-                            Create Album
-                            </button>
-                            <button
-                            onClick={() => setIsCreatingAlbum(false)}
-                            className="bg-gray-300 px-4 py-2 rounded"
-                            >
-                            Cancel
-                            </button>
-                        </div>
-                        </div>
-                    )}
-
-                    {/* Add Image Section */}
-                    {selectedAlbum !== null && (
-                        <div className="pt-4 bg-card-color-2 bg-card-border p-4 rounded w-full max-w-sm">
-                        <h2 className="font-bold">Add Image to {albums[selectedAlbum].title}</h2>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            className="w-full border-color-input p-2 rounded mt-2"
-                            onChange={(e) =>
-                            handleAddImage(selectedAlbum, e.target.files[0], "")
-                            }
-                        />
-                        <textarea
-                            placeholder="Description"
-                            className="w-full border-color-input p-2 rounded mt-2"
-                            onBlur={(e) =>
-                            handleAddImage(
-                                selectedAlbum,
-                                albums[selectedAlbum].images.length
-                                ? albums[selectedAlbum].images[
-                                    albums[selectedAlbum].images.length - 1
-                                    ].image
-                                : "",
-                                e.target.value
-                            )
-                            }
-                        ></textarea>
-                        <button
-                            onClick={() => setSelectedAlbum(null)}
-                            className="bg-gray-300 px-4 py-2 rounded mt-2"
-                        >
-                            Done
-                        </button>
-                        </div>
-                    )}
-                </div>
+              <AlbumGrid 
+                albums={albums}
+                albumTitle={albumTitle}
+                setAlbumTitle={setAlbumTitle}
+                handleCreateAlbum={handleCreateAlbum}
+                handleAddImage={handleAddImage}
+                handleDeleteAlbum={handleDeleteAlbum}
+                isCreatingAlbum={isCreatingAlbum}
+                setIsCreatingAlbum={setIsCreatingAlbum}
+                selectedAlbum={selectedAlbum}
+                setSelectedAlbum={setSelectedAlbum}
+                imageFile={imageFile}
+                setImageFile={setImageFile}
+                imageDescription={imageDescription}
+                setImageDescription={setImageDescription}
+                notification={notification}
+              />
             </>
         );
 

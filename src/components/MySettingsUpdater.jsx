@@ -1,6 +1,80 @@
+import axios from "axios";
+
+const API_BASE = "http://127.0.0.1:8000/api";
+const authHeader = () => ({
+  Authorization: `Token ${localStorage.getItem("token")}`,
+});
+
+export const fetchAlbumsWithImages = async () => {
+  try {
+    const res = await axios.get(`${API_BASE}/albums/`, {
+      headers: authHeader(),
+    });
+
+    const albumsWithImages = await Promise.all(
+      res.data.map(async (album) => {
+        const imageRes = await axios.get(`${API_BASE}/album-images/?album=${album.id}`, {
+          headers: authHeader(),
+        });
+        return { ...album, images: imageRes.data };
+      })
+    );
+
+    return albumsWithImages;
+  } catch (error) {
+    console.error("Error fetching albums:", error);
+    throw error;
+  }
+};
+
+export const createAlbum = async (title) => {
+  try {
+    const res = await axios.post(
+      `${API_BASE}/albums/`,
+      { title },
+      { headers: authHeader() }
+    );
+    return { ...res.data, images: [] };
+  } catch (error) {
+    console.error("Error creating album:", error);
+    throw error;
+  }
+};
+
+export const addImageToAlbum = async (albumId, imageFile, description) => {
+  const formData = new FormData();
+  formData.append("album", albumId);
+  formData.append("image", imageFile);
+  formData.append("description", description);
+
+  try {
+    const res = await axios.post(`${API_BASE}/album-images/`, formData, {
+      headers: {
+        ...authHeader(),
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error uploading image:", error);
+    throw error;
+  }
+};
+
+export const deleteAlbum = async (albumId) => {
+  try {
+    await axios.delete(`${API_BASE}/albums/${albumId}/`, {
+      headers: authHeader(),
+    });
+  } catch (error) {
+    console.error("Error deleting album:", error);
+    throw error;
+  }
+};
+
 export const fetchUserProfile = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/profile/", {
+      const response = await fetch(`${API_BASE}/profile/`, {
         method: "GET",
         headers: {
           Authorization: `Token ${localStorage.getItem("token")}`, // Pass the auth token
@@ -18,7 +92,7 @@ export const fetchUserProfile = async () => {
 
 export const updateProfile = async (data) => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/profile/update/", {
+      const response = await fetch(`${API_BASE}/profile/update/`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -35,7 +109,7 @@ export const updateProfile = async (data) => {
   
 export const changePassword = async (data) => {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/password/change/", {
+    const response = await fetch(`${API_BASE}/password/change/`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -55,7 +129,7 @@ export const uploadProfileImage = async (selectedImage) => {
   formData.append("image", selectedImage);
 
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/profile/upload-image/", { // ✅ Correct endpoint
+    const response = await fetch(`${API_BASE}/profile/upload-image/`, { // ✅ Correct endpoint
       method: "POST",
       headers: {
         Authorization: `Token ${localStorage.getItem("token")}`,
@@ -70,6 +144,38 @@ export const uploadProfileImage = async (selectedImage) => {
     return await response.json();
   } catch (error) {
     console.error("Image upload error:", error);
+    throw error;
+  }
+};
+
+export const fetchUserProfileData = async () => {
+  try {
+    const response = await axios.get(`${API_BASE}/user-profile/`, {
+      headers: {
+        Authorization: `Token ${localStorage.getItem("token")}`,
+      },
+    });
+    return response.data.length > 0 ? response.data[0] : null;
+  } catch (error) {
+    console.error("Error fetching profile:", error);
+    throw error;
+  }
+};
+
+export const saveUserProfile = async (payload, profileId) => {
+  try {
+    const headers = {
+      Authorization: `Token ${localStorage.getItem("token")}`,
+    };
+
+    if (profileId) {
+      await axios.put(`${API_BASE}/user-profile/${profileId}/`, payload, { headers });
+    } else {
+      const response = await axios.post(`${API_BASE}/user-profile/`, payload, { headers });
+      return response.data; // Return to get the new ID
+    }
+  } catch (error) {
+    console.error("Error saving profile:", error);
     throw error;
   }
 };
