@@ -69,13 +69,6 @@ const AlbumGrid = ({
 
       {!currentAlbum && (
         <>
-          {/* <div className="grid grid-cols-4 gap-4 mb-4">
-            {renderAddButton(() => setAlbumDialogOpen(true))}
-            {albums.slice(0, 3).map(renderAlbumTile)}
-          </div>
-          <div className="grid grid-cols-4 gap-4 mb-4">
-            {albums.slice(3, 7).map(renderAlbumTile)}
-          </div> */}
           <div className="grid grid-cols-4 gap-4 mb-4">
             {renderAddButton(() => setAlbumDialogOpen(true))}
             {albums.map(renderAlbumTile)}

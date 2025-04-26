@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Hero from './Hero';
 import Profile from './Profile';
 
-import { getTimeDifference, getLastSeenStatus } from "../utils/lastSeen";
+import { getLastSeenStatus } from "../utils/lastSeen";
 
 const BrowseTask = () => {
   const [tasks, setTasks] = useState([]);
@@ -31,7 +31,6 @@ const BrowseTask = () => {
         }
 
         const data = await response.json();
-        console.log(data)
         setTasks(data);
       } catch (err) {
         console.error("Error fetching tasks:", err);

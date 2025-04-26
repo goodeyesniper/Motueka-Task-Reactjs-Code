@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { updateProfile, changePassword, fetchUserProfile, uploadProfileImage, fetchUserProfileData, saveUserProfile, fetchAlbumsWithImages, createAlbum, addImageToAlbum, deleteAlbum, } from './MySettingsUpdater'
 import ImageUploadDialog from "./ImageUploadDialog";
-import axios from "axios";
 import AlbumGrid from './AlbumGrid'
 
 
@@ -34,31 +33,6 @@ const MySettings = () => {
   
     loadAlbums();
   }, []);
-
-  // useEffect(() => {
-  //   const fetchAlbums = async () => {
-  //     try {
-  //       const res = await axios.get("http://127.0.0.1:8000/api/albums/", {
-  //         headers: {
-  //           Authorization: `Token ${localStorage.getItem("token")}`,
-  //         },
-  //       });
-  //       const albumsWithImages = await Promise.all(res.data.map(async (album) => {
-  //         const imageRes = await axios.get(`http://127.0.0.1:8000/api/album-images/?album=${album.id}`, {
-  //           headers: {
-  //             Authorization: `Token ${localStorage.getItem("token")}`,
-  //           },
-  //         });
-  //         return { ...album, images: imageRes.data };
-  //       }));
-  //       setAlbums(albumsWithImages);
-  //     } catch (error) {
-  //       console.error("Error fetching albums:", error);
-  //     }
-  //   };
-  
-  //   fetchAlbums();
-  // }, []);
   
   const handleCreateAlbum = async () => {
     if (!albumTitle.trim()) {
@@ -76,31 +50,6 @@ const MySettings = () => {
       setNotification("Failed to create album.");
     }
   };
-
-  // const handleCreateAlbum = async () => {
-  //   if (!albumTitle.trim()) {
-  //     setNotification("Album title cannot be empty.");
-  //     return;
-  //   }
-  
-  //   try {
-  //     const res = await axios.post("http://127.0.0.1:8000/api/albums/", {
-  //       title: albumTitle,
-  //     }, {
-  //       headers: {
-  //         Authorization: `Token ${localStorage.getItem("token")}`,
-  //       },
-  //     });
-  
-  //     setAlbums([...albums, { ...res.data, images: [] }]);
-  //     setAlbumTitle("");
-  //     setIsCreatingAlbum(false);
-  //     setNotification("");
-  //   } catch (error) {
-  //     console.error("Error creating album:", error);
-  //     setNotification("Failed to create album.");
-  //   }
-  // };
 
   const handleAddImage = async () => {
     if (!imageFile || selectedAlbum === null) return;
@@ -127,35 +76,6 @@ const MySettings = () => {
       setNotification("Failed to upload image.");
     }
   };
-  
-
-  // const handleAddImage = async () => {
-  //   if (!imageFile || selectedAlbum === null) return;
-  
-  //   const formData = new FormData();
-  //   formData.append("album", albums[selectedAlbum].id);
-  //   formData.append("image", imageFile);
-  //   formData.append("description", imageDescription);
-  
-  //   try {
-  //     const res = await axios.post("http://127.0.0.1:8000/api/album-images/", formData, {
-  //       headers: {
-  //         Authorization: `Token ${localStorage.getItem("token")}`,
-  //         "Content-Type": "multipart/form-data",
-  //       },
-  //     });
-  
-  //     const updatedAlbums = [...albums];
-  //     updatedAlbums[selectedAlbum].images.push(res.data);
-  //     setAlbums(updatedAlbums);
-  //     setImageFile(null);
-  //     setImageDescription("");
-  //     setSelectedAlbum(null);
-  //   } catch (error) {
-  //     console.error("Error uploading image:", error);
-  //     setNotification("Failed to upload image.");
-  //   }
-  // };
 
   const handleDeleteAlbum = async (albumIndex) => {
     const album = albums[albumIndex];
@@ -169,27 +89,6 @@ const MySettings = () => {
       setNotification("Failed to delete album.");
     }
   };
-
-  // const handleDeleteAlbum = async (albumIndex) => {
-  //   const albumToDelete = albums[albumIndex];
-
-  //   const confirmed = window.confirm("Are you sure you want to delete this album?");
-  //     if (!confirmed) return;
-
-  //   try {
-  //     await axios.delete(`http://127.0.0.1:8000/api/albums/${albumToDelete.id}/`, {
-  //       headers: {
-  //         Authorization: `Token ${localStorage.getItem("token")}`,
-  //       },
-  //     });
-  
-  //     const updatedAlbums = albums.filter((_, index) => index !== albumIndex);
-  //     setAlbums(updatedAlbums);
-  //   } catch (error) {
-  //     console.error("Error deleting album:", error);
-  //     setNotification("Failed to delete album.");
-  //   }
-  // };  
 
   const [selectedFilter, setSelectedFilter] = useState("None");
   const [notifications, setNotifications] = useState([
@@ -413,6 +312,7 @@ const MySettings = () => {
       console.error("Error saving profile:", error);
     }
   };  
+  
   
   // Step 3: Content based on the selected item
   const renderContent = () => {
@@ -731,7 +631,7 @@ const MySettings = () => {
     <>
       <div className="container-fluid flex justify-center pb-10">
         <div className="container max-w-6xl pt-3 px-2">
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-x-0 sm:gap-x-5 gap-y-4 mt-3">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-x-0 sm:gap-x-2 gap-y-4 mt-3">
             <div className="flex flex-col col-span-4 sm:col-span-1">
               <ul className="bg-card-border rounded">
                 {[
