@@ -22,6 +22,8 @@
     --selector-color: #e5e7eb;
 
     --border-color: gray;
+    --border-bottom-color: #e5e7eb;
+    --border-top-color: #e5e7eb;
 }
 
 /* Dark Theme */
@@ -46,6 +48,8 @@
     --selector-color: #101828;
 
     --border-color: gray;
+    --border-bottom-color: #1e2939;
+    --border-top-color: #1e2939;
 }
 
 /* Apply variables */
@@ -69,6 +73,14 @@ body {
 
 .link-text-color-no-style {
     color: var(--link-text-color);
+}
+
+.border-bottom {
+    border-bottom: 1px solid var(--border-bottom-color);
+}
+
+.border-top {
+    border-top: 1px solid var(--border-top-color);
 }
 
 .border-color-input {

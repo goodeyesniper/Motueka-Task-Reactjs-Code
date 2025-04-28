@@ -9,6 +9,7 @@ import MyTasks from './components/MyTasks'
 import LoginPage from './components/LoginPage'
 import RegistrationPage from './components/RegistrationPage'
 import ForgotPassword from './components/ForgotPassword'
+import ProfileUserView from './components/ProfileUserView'
 
 function App() {
 
@@ -24,6 +25,7 @@ function App() {
           <Route path="/browsetask" element={<BrowseTask />} />
           <Route path="/mysettings" element={<MySettings />} />
           <Route path="/profile" element={<ProfileView />}/>
+          <Route path="/profileuser/:username" element={<ProfileUserView />}/>
           <Route path="/mytasks" element={<MyTasks />}/>
         </Routes>
     </>

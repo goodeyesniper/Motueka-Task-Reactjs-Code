@@ -3,7 +3,7 @@ import ReviewPanel from './ReviewPanel'
 import { fetchUserProfile, fetchAlbumsWithImages } from "./MySettingsUpdater";
 import { Dialog, DialogContent, Button } from "@mui/material";
 import { getLastSeenStatus } from "../utils/lastSeen";
-
+import Hero from './Hero';
 
 const ProfileView = () => {
     const [profile, setProfile] = useState(null);
@@ -67,9 +67,15 @@ const ProfileView = () => {
     if (!profile) return <p>Error loading profile.</p>;
     if (!albums) return <p>Loading albums...</p>;
     if (!albums) return <p>Loading albums...</p>;
+
+    const handleTaskAdded = (newTask) => {
+        setTasks((prevTasks) => [newTask, ...prevTasks]);
+      };
     
     return (
         <>
+            <Hero onTaskAdded={handleTaskAdded} />
+
             <div className="container-fluid flex justify-center pb-10">
                 <div className="container max-w-6xl pt-3 px-2">
                     <div className="grid grid-cols-4 gap-x-2 mt-3 gap-y-4">
@@ -102,22 +108,22 @@ const ProfileView = () => {
                                     </div>
                                 )}
 
-                                <p className="pt-2 pb-5 text-sm">Member Since <strong className="font-bold">{profile.member_since}</strong></p>
-                                <p className="pt-5 pb-2 text-sm">Lives in <span className="font-bold">{profile.address}</span></p>
+                                <p className="pt-2 pb-5 text-sm">Member Since <span className="">{profile.member_since}</span></p>
+                                <p className="pt-5 pb-2 text-sm font-bold">Lives in <span className="">{profile.address}</span></p>
                             
-                                <h1 className="pt-5 pb-2 text-sm">About Me</h1>
-                                <p className="font-bold pb-2 text-sm">"{profile.about_me || "This person is too lazy to provide details"}"</p>
-                                <h1 className="pt-5 pb-2 text-sm">Skills</h1>
-                                <p className="font-bold pb-2 text-sm">{profile.skills.length > 0 ? profile.skills.join(", ") : "No skills listed"}</p>
+                                <h1 className="pt-5 pb-2 text-sm font-bold">About Me</h1>
+                                <p className="pb-2 text-sm">"{profile.about_me || "This person is too lazy to provide details"}"</p>
+                                <h1 className="pt-5 pb-2 text-sm font-bold">Skills</h1>
+                                <p className="pb-2 text-sm">{profile.skills.length > 0 ? profile.skills.join(", ") : "No skills listed"}</p>
                             </div>
                         </div>
                         <div className="flex flex-col col-span-4 sm:col-span-3 px-5 pt-2 pb-10 bg-card-border-2 rounded">
                             <div>
-                                <h1 className="border-b mb-2 text-xl font-bold">My Portfolio</h1>
+                                <h1 className="border-bottom mb-5 font-bold">My Portfolio</h1>
                                 {selectedAlbum ? (
                                     // ✅ Inside an Album View
                                     <div className="flex flex-col">
-                                        <h2 className="text-md font-bold py-2">Album Name: {selectedAlbum.title}</h2>
+                                        <h2 className="font-bold py-2">Album Name: {selectedAlbum.title}</h2>
                                         <div>
                                             <Button onClick={() => setSelectedAlbum(null)}>← Back</Button>
                                         </div>
@@ -141,8 +147,8 @@ const ProfileView = () => {
                                     // ✅ Albums View
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {albums.map((album) => (
-                                        <div key={album.id} className="bg-gray-200 p-4 rounded cursor-pointer" onClick={() => setSelectedAlbum(album)}>
-                                        <h2 className="font-bold text-lg">{album.title}</h2>
+                                        <div key={album.id} className="bg-card-border p-4 rounded-lg cursor-pointer" onClick={() => setSelectedAlbum(album)}>
+                                        <h2 className="font-bold">{album.title}</h2>
                                         <p className="text-sm">Created: {new Date(album.created_at).toDateString()}</p>
 
                                         <div className="grid grid-cols-3 gap-2 mt-2">

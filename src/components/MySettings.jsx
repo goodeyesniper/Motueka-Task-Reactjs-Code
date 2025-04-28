@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import { updateProfile, changePassword, fetchUserProfile, uploadProfileImage, fetchUserProfileData, saveUserProfile, fetchAlbumsWithImages, createAlbum, addImageToAlbum, deleteAlbum, } from './MySettingsUpdater'
 import ImageUploadDialog from "./ImageUploadDialog";
 import AlbumGrid from './AlbumGrid'
-
+import Hero from './Hero';
 
 const MySettings = () => {
   // Step 1: State to keep track of the selected item
@@ -311,7 +311,11 @@ const MySettings = () => {
     } catch (error) {
       console.error("Error saving profile:", error);
     }
-  };  
+  };
+
+  const handleTaskAdded = (newTask) => {
+    setTasks((prevTasks) => [newTask, ...prevTasks]);
+  };
   
   
   // Step 3: Content based on the selected item
@@ -387,7 +391,7 @@ const MySettings = () => {
         return (
             <>
               <div className="w-full pt-2">
-                <h1 className="border-b">
+                <h1 className="border-bottom">
                   This is where you display your expertise, skills, and what sets you apart from others.
                 </h1>
                 <p className="pt-10 pb-2 font-bold">What are you here for?</p>
@@ -484,7 +488,7 @@ const MySettings = () => {
           <>
             <div className="w-full pt-2">
               <div className="mb-2">
-                <div className="grid grid-cols-3 mt-2 mb-5 gap-4 border-b place-items-start">
+                <div className="grid grid-cols-3 mt-2 mb-5 gap-4 border-bottom place-items-start">
                   <div className="col-span-3 md:col-span-1">
                     <label>Filter Notifications: </label>
                     <select
@@ -629,6 +633,8 @@ const MySettings = () => {
 
   return (
     <>
+      <Hero onTaskAdded={handleTaskAdded} />
+
       <div className="container-fluid flex justify-center pb-10">
         <div className="container max-w-6xl pt-3 px-2">
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-x-0 sm:gap-x-2 gap-y-4 mt-3">

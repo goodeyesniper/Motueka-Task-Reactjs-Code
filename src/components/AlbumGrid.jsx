@@ -65,7 +65,7 @@ const AlbumGrid = ({
 
   return (
     <div className="w-full pt-2">
-      <h1 className="border-b mb-2 text-xl font-bold">My Portfolio</h1>
+      <h1 className="border-bottom mb-5 font-bold">My Portfolio</h1>
 
       {!currentAlbum && (
         <>
@@ -80,7 +80,7 @@ const AlbumGrid = ({
       {currentAlbum && (
         <>
           <div className="flex flex-col sm:flex-row justify-between items-center mb-2">
-            <h2 className="text-md font-bold py-2">Album Name: {currentAlbum.title}</h2>
+            <h2 className="text-md font-bold py-2">Album title: {currentAlbum.title}</h2>
             <div className="flex justify-between sm:justify-end w-full sm:w-auto gap-2">
                 <Button onClick={() => setSelectedAlbum(null)}>← Back</Button>
                 <Button color="error" onClick={() => handleDeleteAlbum(selectedAlbum)}>Delete Album</Button>

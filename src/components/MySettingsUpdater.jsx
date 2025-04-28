@@ -179,3 +179,21 @@ export const saveUserProfile = async (payload, profileId) => {
     throw error;
   }
 };
+
+// For fetching other user's profile
+export const fetchSpecificUserProfile = async (username) => {
+  if (!username) {
+      console.error("Error: username is undefined.");
+      return null;
+  }
+
+  try {
+      const response = await axios.get(`${API_BASE}/public-user-profile/${username}/`, {
+          headers: { Authorization: `Token ${localStorage.getItem("token")}` },
+      });
+      return response.data;
+  } catch (error) {
+      console.error(`Error fetching profile for ID ${username}:`, error);
+      return null;
+  }
+};
