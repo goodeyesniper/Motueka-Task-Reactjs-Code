@@ -197,11 +197,11 @@ const ProfileView = () => {
                                     </DialogContent>
                                 </Dialog>
                             </div>
-                            <div className="pt-10">
+                            {/* <div className="pt-10">
                                 <h1 className="font-bold">Reviews</h1>
                                 <p>Reviews from different users here..</p>
                                 <ReviewPanel />
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>

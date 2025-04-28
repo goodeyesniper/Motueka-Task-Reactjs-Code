@@ -191,9 +191,29 @@ export const fetchSpecificUserProfile = async (username) => {
       const response = await axios.get(`${API_BASE}/public-user-profile/${username}/`, {
           headers: { Authorization: `Token ${localStorage.getItem("token")}` },
       });
+      
       return response.data;
   } catch (error) {
       console.error(`Error fetching profile for ID ${username}:`, error);
       return null;
+  }
+};
+
+export const fetchUserAlbums = async (username) => {
+  if (!username) {
+    console.error("Error: username is undefined.");
+    return [];
+  }
+
+  try {
+      const response = await axios.get(`${API_BASE}/albums/?user=${username}`, {
+          headers: { Authorization: `Token ${localStorage.getItem("token")}` },
+      });
+
+      console.log("Fetched albums for", username, response.data);
+      return response.data; // Returns album data
+  } catch (error) {
+      console.error(`Error fetching albums for username ${username}:`, error);
+      return [];
   }
 };

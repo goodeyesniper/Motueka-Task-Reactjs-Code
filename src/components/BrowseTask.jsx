@@ -8,7 +8,36 @@ import { getLastSeenStatus } from "../utils/lastSeen";
 const BrowseTask = () => {
   const [tasks, setTasks] = useState([]);
   const [lastSeen, setLastSeen] = useState(null);
-  const MEDIA_ROOT = "http://127.0.0.1:8000";
+  const [loggedInUser, setLoggedInUser] = useState(null);
+
+  useEffect(() => {
+    const fetchLoggedInUser = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/current-user/', {
+          headers: {
+            Authorization: `Token ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch user data');
+        }
+
+        const data = await response.json();
+        setLoggedInUser(data);
+        console.log('Logged-in user:', data);
+      } catch (error) {
+        console.error('Error fetching logged-in user:', error);
+      }
+    };
+
+    fetchLoggedInUser();
+  }, []);
+
+  
 
   // 🔄 Fetch tasks from backend (decide if user is logged in or not)
   useEffect(() => {
@@ -40,15 +69,6 @@ const BrowseTask = () => {
 
     fetchTasks();
   }, []);
-
-  const handleTaskAdded = (newTask) => {
-    setTasks((prevTasks) => [newTask, ...prevTasks]);
-  };
-
-  const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -83,6 +103,18 @@ const BrowseTask = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const handleTaskAdded = (newTask) => {
+    setTasks((prevTasks) => [newTask, ...prevTasks]);
+  };
+
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  if (!loggedInUser) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
@@ -100,18 +132,22 @@ const BrowseTask = () => {
               className="max-w-6xl grid grid-cols-1 sm:grid-cols-4 gap-0 sm:gap-4 gap-y-2 mb-5 bg-card-border-2 rounded py-4 px-4"
             >
               <div className="flex flex-col justify-start items-center pt-2">
-              <Link to={`/profileuser/${task.author_profile?.username || task.author_username}`}>
-                  {task.author_profile?.image_url && (
-                    <Profile 
-                      img={task.author_profile?.image_url || null} 
-                    />
-                  )}
-                    <p className="pt-2 pb-5 font-semibold text-center">
-                        {task.author_profile?.full_name ||
-                        task.author_username ||
-                        'No Name'}
-                    </p>
-                </Link>
+              <Link 
+                to={
+                  loggedInUser?.username === (task.author_profile?.username || task.author_username)
+                    ? `/profile`
+                    : `/profileuser/${task.author_profile?.username || task.author_username}`
+                }
+              >
+                {task.author_profile?.image_url && (
+                  <Profile img={task.author_profile?.image_url || null} />
+                )}
+                <p className="pt-2 pb-5 font-semibold text-center">
+                  {task.author_profile?.full_name ||
+                  task.author_username ||
+                  'No Name'}
+                </p>
+              </Link>
                 {task.author_profile?.last_seen && (
                   <div className="text-sm">
                     <div className="flex justify-center items-center gap-2">
