@@ -326,8 +326,8 @@ const MySettings = () => {
             <>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2">
                     <div className="col-span-3">
-                        <h1 className="font-bold">Personal Information</h1>
-                        <p className="text-xs">Manage your personal information</p>
+                        <h1 className="font-bold border-bottom">Personal Information</h1>
+                        <p className="text-xs pt-1 mb-5">Manage your personal information</p>
                     </div>
                     <div className="flex flex-col col-span-3 md:col-span-1 place-items-center">
                         <p className="pb-10">Your display picture</p>
@@ -387,7 +387,7 @@ const MySettings = () => {
             </>
         );
 
-      case "Personal Details":
+      case "Personal Profile":
         return (
             <>
               <div className="w-full pt-2">
@@ -642,7 +642,7 @@ const MySettings = () => {
               <ul className="bg-card-border rounded">
                 {[
                   "Account Settings",
-                  "Personal Details",
+                  "Personal Profile",
                   "My Portfolio",
                   "Notifications",
                   "Verification",

@@ -27,11 +27,11 @@ const Hero = ({ onTaskAdded }) => {
       <div className="container-fluid flex justify-center sticky top-13 z-10 bg-color-container">
         <div className="container max-w-6xl flex flex-row place-items-start">
 
-          <button className="m-2 custom-btn-container custom-btn" onClick={isAuthenticated ? handleOpenModal : handleShowWarning}>
+          <button className="m-2 custom-btn-container custom-btn whitespace-nowrap" onClick={isAuthenticated ? handleOpenModal : handleShowWarning}>
             Post a Task
           </button>
           
-          <Link to="/browsetask" className="custom-btn-container custom-btn m-2">
+          <Link to="/browsetask" className="custom-btn-container custom-btn m-2 whitespace-nowrap">
             Browse Tasks
           </Link>
 

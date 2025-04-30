@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import Hero from './Hero';
 import Profile from './Profile';
 import { Link } from 'react-router-dom'
-
 import { getLastSeenStatus } from "../utils/lastSeen";
 
 const BrowseTask = () => {
