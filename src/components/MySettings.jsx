@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react"
+import { useSearchParams } from "react-router-dom";
 import { updateProfile, changePassword, fetchUserProfile, uploadProfileImage, fetchUserProfileData, saveUserProfile, fetchAlbumsWithImages, createAlbum, addImageToAlbum, deleteAlbum, } from './MySettingsUpdater'
 import ImageUploadDialog from "./ImageUploadDialog";
 import AlbumGrid from './AlbumGrid'
@@ -6,11 +7,22 @@ import Hero from './Hero';
 
 const MySettings = () => {
   // Step 1: State to keep track of the selected item
-  const [selectedItem, setSelectedItem] = useState("Account Settings");
+  // const [selectedItem, setSelectedItem] = useState("Account Settings");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialTab = searchParams.get("tab") || "Account Settings";
+  const [selectedItem, setSelectedItem] = useState(initialTab);
 
   // Step 2: Function to handle item selection
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab && tab !== selectedItem) {
+      setSelectedItem(tab);
+    }
+  }, [searchParams]);
+  
   const handleSelection = (item) => {
     setSelectedItem(item);
+    setSearchParams({ tab: item }); // updates the URL
   };
   
   const [isCreatingAlbum, setIsCreatingAlbum] = useState(false);

@@ -70,7 +70,7 @@ const Navbar = () => {
                             {/* Show when logged in */}
                             {isAuthenticated && (
                                 <>
-                                    <li className='navbar-li nav-li-sidebar'><Link to='/' className='navbar-links nav-link-sidebar'>My Tasks</Link></li>
+                                    <li className='navbar-li nav-li-sidebar'><Link to='/mytasks' className='navbar-links nav-link-sidebar'>My Tasks</Link></li>
                                     <li className='navbar-li nav-li-sidebar'><Link to='/profile' className='navbar-links nav-link-sidebar'>My Profile</Link></li>
                                     <li className='navbar-li nav-li-sidebar'><Link to='/mysettings' className='navbar-links nav-link-sidebar'>Settings</Link></li>
                                     <li className='navbar-li nav-li-sidebar'><Link to='#' className='navbar-links nav-link-sidebar'>Notifications</Link></li>

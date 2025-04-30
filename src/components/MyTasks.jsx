@@ -132,7 +132,7 @@ const MyTasks = () => {
                             />
 
                             {selectedTasks.length === 0 ? (
-                                <span className="text-gray-700">Select All</span>
+                                <span className="">Select All</span>
                             ) : (
                                 <div className='mb-2'>
                                     <button
@@ -170,7 +170,6 @@ const MyTasks = () => {
                                     key={task.id}
                                     className={`flex items-center overflow-hidden my-2 border-bottom border-top ${selectedTasks.includes(task.id) ? 'bg-blue-400 text-white' : ''}`}
                                 >
-                            
                                     <div className="px-4 flex justify-center w-[20px]">
                                         <input type="checkbox"
                                             className="w-4 h-4"
@@ -184,7 +183,7 @@ const MyTasks = () => {
                                         <p>{task.task_title}</p>
                                     </div>
                                     <div className="px-2 flex justify-center sm:w-[100px]">
-                                        <p>{task.status}</p>
+                                        <p>{task.status.charAt(0).toUpperCase() + task.status.slice(1)}</p>
                                     </div>
                                 </div>
                             ))}

@@ -4,6 +4,8 @@ import { fetchUserProfile, fetchAlbumsWithImages } from "./MySettingsUpdater";
 import { Dialog, DialogContent, Button } from "@mui/material";
 import { getLastSeenStatus } from "../utils/lastSeen";
 import Hero from './Hero';
+import { Link } from 'react-router-dom';
+
 
 const ProfileView = () => {
     const [profile, setProfile] = useState(null);
@@ -119,7 +121,13 @@ const ProfileView = () => {
                         </div>
                         <div className="flex flex-col col-span-4 sm:col-span-3 px-5 pt-2 pb-10 bg-card-border-2 rounded">
                             <div>
-                                <h1 className="border-bottom mb-5 font-bold">My Portfolio</h1>
+                                <div className="flex flex-col sm:flex-row justify-between border-bottom mb-5 place-items-start sm:place-items-center">
+                                    <h1 className="font-bold py-2">My Portfolio</h1>
+                                    <div className="py-2 flex items-center">
+                                        <Link to="/mysettings?tab=My Portfolio" className="custom-btn-container custom-btn">Edit Portfolio</Link>
+                                    </div>
+
+                                </div>
                                 {selectedAlbum ? (
                                     // ✅ Inside an Album View
                                     <div className="flex flex-col">
@@ -197,11 +205,6 @@ const ProfileView = () => {
                                     </DialogContent>
                                 </Dialog>
                             </div>
-                            {/* <div className="pt-10">
-                                <h1 className="font-bold">Reviews</h1>
-                                <p>Reviews from different users here..</p>
-                                <ReviewPanel />
-                            </div> */}
                         </div>
                     </div>
                 </div>
