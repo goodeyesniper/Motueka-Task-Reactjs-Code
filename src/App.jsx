@@ -10,6 +10,7 @@ import LoginPage from './components/LoginPage'
 import RegistrationPage from './components/RegistrationPage'
 import ForgotPassword from './components/ForgotPassword'
 import ProfileUserView from './components/ProfileUserView'
+import TaskView from './components/TaskView'
 
 function App() {
 
@@ -27,6 +28,7 @@ function App() {
           <Route path="/profile" element={<ProfileView />}/>
           <Route path="/profileuser/:username" element={<ProfileUserView />}/>
           <Route path="/mytasks" element={<MyTasks />}/>
+          <Route path="/mytasks/:taskId" element={<TaskView />}/>
         </Routes>
     </>
   )

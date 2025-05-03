@@ -1,40 +1,17 @@
 import Hero from './Hero';
 import { useEffect, useState } from 'react';
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+
+import useLoggedInUser from '../hooks/useLoggedInUser';
 
 const MyTasks = () => {
+    const navigate = useNavigate();
+    const loggedInUser = useLoggedInUser();
+
     const [tasks, setTasks] = useState([]);
-    const [loggedInUser, setLoggedInUser] = useState(null);
     const [selectedTasks, setSelectedTasks] = useState([]);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-    useEffect(() => {
-        const fetchLoggedInUser = async () => {
-            const token = localStorage.getItem('token');
-            if (!token) return;
-
-            try {
-                const response = await fetch('http://127.0.0.1:8000/api/current-user/', {
-                    headers: {
-                        Authorization: `Token ${token}`,
-                    },
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to fetch user data');
-                }
-
-                const data = await response.json();
-                setLoggedInUser(data);
-                console.log('Logged-in user:', data);
-            } catch (error) {
-                console.error('Error fetching logged-in user:', error);
-            }
-        };
-
-        fetchLoggedInUser();
-    }, []);
-
 
     useEffect(() => {
         const fetchUserTasks = async () => {
@@ -122,7 +99,7 @@ const MyTasks = () => {
                     <h1 className="pt-2 pb-5 px-2">Task list here</h1>
 
                     {tasks.length > 0 && (
-                        <div className='flex items-center mb-5 px-2 border-bottom'>
+                        <div className='flex items-center mb-5 px-2 border-bottom py-2'>
                             <input
                                 type="checkbox"
                                 name="select-all"
@@ -132,9 +109,9 @@ const MyTasks = () => {
                             />
 
                             {selectedTasks.length === 0 ? (
-                                <span className="">Select All</span>
+                                <span className="text-sm">Select All</span>
                             ) : (
-                                <div className='mb-2'>
+                                <div className=''>
                                     <button
                                         className="custom-btn-container custom-btn m-2 whitespace-nowrap"
                                         onClick={handleOpenDialog}
@@ -151,15 +128,15 @@ const MyTasks = () => {
                     ) : (
                         <>
                             {/* ⬇️ Table header goes here */}
-                            <div className='flex items-center overflow-hidden task-header'>
+                            <div className='flex items-center overflow-hidden task-header pb-1'>
                                 <div className="px-4 flex justify-center w-[20px]"></div>
-                                <div className="px-2 flex justify-center sm:w-[120px]">
+                                <div className="px-2 flex justify-center sm:w-[120px] text-sm">
                                     <p className='font-bold'>Posted on</p>
                                 </div>
-                                <div className="px-2 flex-grow flex justify-center">
+                                <div className="px-2 flex-grow flex justify-center text-sm">
                                     <p className='font-bold'>Task Title</p>
                                 </div>
-                                <div className="px-2 flex justify-center sm:w-[100px]">
+                                <div className="px-2 flex justify-center sm:w-[100px] text-sm">
                                     <p className='font-bold'>Status</p>
                                 </div>
                             </div>
@@ -168,7 +145,7 @@ const MyTasks = () => {
                             {tasks.map((task) => (
                                 <div
                                     key={task.id}
-                                    className={`flex items-center overflow-hidden my-2 border-bottom border-top ${selectedTasks.includes(task.id) ? 'bg-blue-400 text-white' : ''}`}
+                                    className={`flex items-center overflow-hidden border-bottom border-top text-center mb-2 ${selectedTasks.includes(task.id) ? 'bg-blue-400 text-white' : ''}`}
                                 >
                                     <div className="px-4 flex justify-center w-[20px]">
                                         <input type="checkbox"
@@ -176,14 +153,19 @@ const MyTasks = () => {
                                             checked={selectedTasks.includes(task.id)}
                                             onChange={() => toggleTaskSelection(task.id)} />
                                     </div>
-                                    <div className="px-2 flex justify-center sm:w-[120px]">
-                                        <p>{new Date(task.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
-                                    </div>
-                                    <div className="px-2 flex-grow flex justify-center">
-                                        <p>{task.task_title}</p>
-                                    </div>
-                                    <div className="px-2 flex justify-center sm:w-[100px]">
-                                        <p>{task.status.charAt(0).toUpperCase() + task.status.slice(1)}</p>
+                                    <div 
+                                        className="flex-grow flex items-center cursor-pointer py-2"
+                                        onClick={() => navigate(`/mytasks/${task.id}`)}
+                                    >
+                                        <div className="px-2 flex justify-center sm:w-[120px] text-sm text-start">
+                                            <p>{new Date(task.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
+                                        </div>
+                                        <div className="px-2 flex-grow flex justify-center text-sm">
+                                            <p>{task.task_title}</p>
+                                        </div>
+                                        <div className="px-2 flex justify-center sm:w-[100px] text-sm">
+                                            <p>{task.status.charAt(0).toUpperCase() + task.status.slice(1)}</p>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
