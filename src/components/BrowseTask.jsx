@@ -85,7 +85,7 @@ const BrowseTask = () => {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  if (!loggedInUser) {
+  if (!loggedInUser === undefined) {
     return <div>Loading...</div>;
   }
 
