@@ -339,10 +339,15 @@ const TaskModal = ({ onClose, onTaskAdded }) => {
                 <li>Address: {formValues.address}</li>
                 <li>Date: {formValues.date}</li>
                 <li>Time: From {formValues.timeFrom} to {formValues.timeTo}</li>
-                <li>
+                {/* <li>
                   Budget: {formValues.budgetOption}{" "}
                   {formValues.budgetOption === "Approx" && `$${formValues.budgetValue}`}
+                </li> */}
+                <li>
+                  Budget: {formValues.budgetValue ? `$${formValues.budgetValue}` : "Not sure"}
                 </li>
+
+
               </ul>
               <IconButton onClick={() => setPage(1)} style={{ marginTop: "20px" }}>
                 <EditIcon />

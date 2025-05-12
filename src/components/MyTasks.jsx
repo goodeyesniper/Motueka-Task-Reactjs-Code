@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
-import useLoggedInUser from '../hooks/useLoggedInUser';
+import { useLoggedInUser } from '../hooks/useLoggedInUser';
 
 const MyTasks = () => {
     const navigate = useNavigate();

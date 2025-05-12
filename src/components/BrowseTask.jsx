@@ -4,51 +4,47 @@ import Profile from './Profile';
 import { Link, useNavigate } from 'react-router-dom'
 import { getLastSeenStatus } from "../utils/lastSeen";
 
-import useLoggedInUser from '../hooks/useLoggedInUser';
-
 const BrowseTask = () => {
   const navigate = useNavigate();
-  const loggedInUser = useLoggedInUser();
-
   const [tasks, setTasks] = useState([]);
   const [lastSeen, setLastSeen] = useState(null);
+  // const loggedInUser = useLoggedInUser();
 
   useEffect(() => {
     const fetchTasks = async () => {
       try {
         const token = localStorage.getItem("token");
-        const url = token && token !== 'undefined'
-          ? "http://127.0.0.1:8000/api/posts/"
-          : "http://127.0.0.1:8000/api/public-posts/";
-
+        const url = "http://127.0.0.1:8000/api/posts/";  // New API endpoint for posts
+  
         const headers = token && token !== 'undefined'
           ? {
-              Authorization: `Token ${token}`,
+              Authorization: `Token ${token}`,  // Pass token for authenticated users
             }
-          : {};
-
+          : {};  // For unauthenticated users, no headers needed
+  
         const response = await fetch(url, { headers });
-
+  
         if (!response.ok) {
           throw new Error("Failed to fetch posts");
         }
-
+  
         const data = await response.json();
         setTasks(data);
       } catch (err) {
         console.error("Error fetching tasks:", err);
       }
     };
-
+  
     fetchTasks();
   }, []);
+  
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token || token === 'undefined') return;
-
+  
     const updateLastSeen = () => {
-      fetch("http://127.0.0.1:8000/api/profile/", {
+      fetch('http://127.0.0.1:8000/api/current-user/', {
         headers: {
           Authorization: `Token ${token}`,
           'Content-Type': 'application/json'
@@ -56,25 +52,47 @@ const BrowseTask = () => {
       })
         .then(res => {
           if (!res.ok) {
-            throw new Error('Failed to fetch last seen');
+            throw new Error('Failed to fetch current user');
           }
           return res.json();
         })
         .then(data => {
-          if (data?.last_seen) {
-            setLastSeen(data.last_seen);
+          const username = data?.username;
+          if (username) {
+            // Once we have the username, fetch the profile and last seen data
+            fetch(`http://127.0.0.1:8000/api/profile/${username}/`, {
+              headers: {
+                Authorization: `Token ${token}`,
+                'Content-Type': 'application/json'
+              },
+            })
+              .then(res => {
+                if (!res.ok) {
+                  throw new Error('Failed to fetch last seen');
+                }
+                return res.json();
+              })
+              .then(seenData => {
+                if (seenData?.last_seen) {
+                  setLastSeen(seenData.last_seen);
+                }
+              })
+              .catch(error => {
+                console.error('Error fetching last seen:', error);
+              });
           }
         })
         .catch(error => {
-          console.error('Error updating last seen:', error);
+          console.error('Error fetching current user:', error);
         });
     };
-
+  
     updateLastSeen();
     const interval = setInterval(updateLastSeen, 60000);
-
+  
     return () => clearInterval(interval);
   }, []);
+  
 
   const handleTaskAdded = (newTask) => {
     setTasks((prevTasks) => [newTask, ...prevTasks]);
@@ -84,10 +102,6 @@ const BrowseTask = () => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
-
-  if (!loggedInUser === undefined) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <>
@@ -104,17 +118,12 @@ const BrowseTask = () => {
               key={task.id}
               className="max-w-6xl grid grid-cols-1 sm:grid-cols-4 gap-0 sm:gap-4 gap-y-2 mb-3 bg-card-border-2 rounded py-4 px-2"
             >
-              <div className="flex flex-row sm:flex-col justify-start items-center pt-2 gap-2">
+              <div className="flex flex-row sm:flex-col justify-center sm:justify-start items-center pt-2 gap-2">
                 
                 {/* Info Container */}
                 <div className="flex flex-col items-start sm:items-center text-start sm:text-center overflow-hidden">
-                  <Link
-                    to={
-                      loggedInUser?.username === (task.author_profile?.username || task.author_username)
-                        ? `/profile`
-                        : `/profileuser/${task.author_profile?.username || task.author_username}`
-                    }
-                  >
+                  <Link to={`/profile/${task.author_profile?.username}`}>
+              
                     {/* Image Container */}
                     <div className="flex-shrink-0">
                       {task.author_profile?.image_url && (
@@ -130,7 +139,7 @@ const BrowseTask = () => {
                   </Link>
 
                     {task.author_profile?.last_seen && (
-                      <div className="text-sm place-items-start sm:place-items-center px-2">
+                      <div className="text-sm place-items-center px-2">
                         <div className="flex items-center gap-2">
                           <span
                             className={`w-2 h-2 rounded-full ${
@@ -193,7 +202,14 @@ const BrowseTask = () => {
                       </div>
                       <div className="flex items-center pb-1 overflow-hidden">
                         <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7 flex-shrink-0" viewBox="0 -960 960 960" fill="#0066A2"><path d="M441-120v-86q-53-12-91.5-46T293-348l74-30q15 48 44.5 73t77.5 25q41 0 69.5-18.5T587-356q0-35-22-55.5T463-458q-86-27-118-64.5T313-614q0-65 42-101t86-41v-84h80v84q50 8 82.5 36.5T651-650l-74 32q-12-32-34-48t-60-16q-44 0-67 19.5T393-614q0 33 30 52t104 40q69 20 104.5 63.5T667-358q0 71-42 108t-104 46v84h-80Z"/></svg>
-                        <span className='font-bold p-2'><button className="whitespace-nowrap">{task.budget_option} {task.budget_option === 'Approx' ? `$${task.budget_value}` : ''}</button></span>
+                        <span className='font-bold p-2'>
+                          {/* <button className="whitespace-nowrap">{task.budget_option} {task.budget_option === 'Approx' ? `$${task.budget_value}` : ''}</button> */}
+                          {task.budget_option === 'Approx' ? (
+                              <button>{`$${task.budget_value}`}</button>
+                          ) : (
+                              <p>Not sure</p>
+                          )}
+                        </span>
                       </div>
                     </div>
                   </div>

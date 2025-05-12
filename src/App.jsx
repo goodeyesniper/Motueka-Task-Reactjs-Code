@@ -11,6 +11,8 @@ import RegistrationPage from './components/RegistrationPage'
 import ForgotPassword from './components/ForgotPassword'
 import ProfileUserView from './components/ProfileUserView'
 import TaskView from './components/TaskView'
+import ProtectedRoute from "./components/ProtectedRoute";
+
 
 function App() {
 
@@ -24,11 +26,12 @@ function App() {
           <Route path="/register" element={<RegistrationPage />} />
           <Route path="forgotpass" element={<ForgotPassword />} />
           <Route path="/browsetask" element={<BrowseTask />} />
-          <Route path="/mysettings" element={<MySettings />} />
-          <Route path="/profile" element={<ProfileView />}/>
+          <Route path="/profile/:username" element={<ProfileView />}/>
           <Route path="/profileuser/:username" element={<ProfileUserView />}/>
-          <Route path="/mytasks" element={<MyTasks />}/>
-          <Route path="/mytasks/:taskId" element={<TaskView />}/>
+
+          <Route path="/mysettings" element={<ProtectedRoute><MySettings /></ProtectedRoute>} />
+          <Route path="/mytasks" element={<MyTasks />} />
+          <Route path="/mytasks/:taskId" element={<TaskView />} />
         </Routes>
     </>
   )

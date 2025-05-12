@@ -10,8 +10,12 @@ const Hero = ({ onTaskAdded }) => {
   const isAuthenticated = localStorage.getItem('token') !== null;
 
   const handleOpenModal = () => setIsModalOpen(true);
-  const handleShowWarning = () => setShowLoginWarning(true);
   const handleCloseModal = () => setIsModalOpen(false);
+
+  const handleShowWarning = () => {
+        document.activeElement?.blur(); // 🟢 Remove focus from the triggering element. This removes Blocked aria-hidden on an element error in the console
+        setShowLoginWarning(true);
+    };
   const handleCloseWarning = () => setShowLoginWarning(false);
 
   useEffect(() => {

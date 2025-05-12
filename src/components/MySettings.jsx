@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from "react"
-import { useSearchParams } from "react-router-dom";
-import { updateProfile, changePassword, fetchUserProfile, uploadProfileImage, fetchUserProfileData, saveUserProfile, fetchAlbumsWithImages, createAlbum, addImageToAlbum, deleteAlbum, } from './MySettingsUpdater'
+import { useSearchParams, useParams } from "react-router-dom";
+
+import { 
+  updateProfile, changePassword, fetchUserProfile, 
+  uploadProfileImage, fetchUserProfileData, saveUserProfile, 
+  createAlbum, addImageToAlbum, 
+} from './MySettingsUpdater'
+
 import ImageUploadDialog from "./ImageUploadDialog";
 import AlbumGrid from './AlbumGrid'
 import Hero from './Hero';
 
+import { API_BASE, authHeader, authHeader1 } from "../api/config";
+
 const MySettings = () => {
-  // Step 1: State to keep track of the selected item
-  // const [selectedItem, setSelectedItem] = useState("Account Settings");
   const [searchParams, setSearchParams] = useSearchParams();
   const initialTab = searchParams.get("tab") || "Account Settings";
   const [selectedItem, setSelectedItem] = useState(initialTab);
@@ -24,6 +30,171 @@ const MySettings = () => {
     setSelectedItem(item);
     setSearchParams({ tab: item }); // updates the URL
   };
+
+  const [profileError, setProfileError] = useState("");
+  const [profileSuccessMessage, setProfileSuccessMessage] = useState(""); // For profile updates
+
+  const [userData, setUserData] = useState({
+    first_name: "",
+    email: "",
+    date_of_birth: "",
+    address: "",
+    contact_number: "",
+    image_url: "https://placehold.co/120x120.png", // Stores user's profile picture URL
+  });
+
+  const [passwordData, setPasswordData] = useState({
+    current_password: "",
+    new_password: "",
+    confirm_password: "",
+  });
+
+  // Load profile details when component mounts
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token || token === "undefined") return;
+
+    const loadUserProfile = async () => {
+        try {
+            const profileResponse = await fetch(`${API_BASE}/profile/`, {
+                method: "GET",
+                headers: { ...authHeader() },
+            });
+
+            if (!profileResponse.ok) {
+                throw new Error("Failed to fetch user profile");
+            }
+
+            const userProfile = await profileResponse.json();
+            setUserData({
+                full_name: userProfile.full_name || "",
+                email: userProfile.email || "",
+                date_of_birth: userProfile.date_of_birth || "",
+                address: userProfile.address || "",
+                contact_number: userProfile.contact_number || "",
+                image_url: userProfile.image_url || "https://placehold.co/120x120.png",
+            });
+
+        } catch (error) {
+            console.error("Error loading user profile:", error);
+        }
+    };
+
+    loadUserProfile();
+
+  }, []);
+  
+  // Handle input changes for profile
+  const handleInputChangeUserData = (e) => {
+    const { name, value } = e.target;
+    if (name === "contact_number") {
+        // ✅ Allow only numbers and enforce max length of 10
+        const sanitizedValue = value.replace(/\D/g, "").slice(0, 10);
+        setUserData({ ...userData, [name]: sanitizedValue });
+    } else {
+        setUserData({ ...userData, [name]: value });
+    }
+  };
+
+  const handleProfileSave = async () => {
+    try {
+      await updateProfile(userData);
+      setProfileSuccessMessage("Profile updated successfully!");
+      setProfileError("");
+
+      // Refresh data after update
+      const updatedProfile = await fetchUserProfile();
+      setUserData({
+        full_name: updatedProfile.full_name || "",
+        email: updatedProfile.email || "",
+        date_of_birth: updatedProfile.date_of_birth || "",
+        address: updatedProfile.address || "",
+        contact_number: updatedProfile.contact_number || "",
+        image_url: updatedProfile.image_url || "https://placehold.co/120x120.png",
+      });
+    } catch (error) {
+      setProfileError("Error updating profile.");
+      setProfileSuccessMessage("");
+    }
+  };
+
+  const [passwordError, setPasswordError] = useState("");
+  const [passwordSuccessMessage, setPasswordSuccessMessage] = useState(""); // For password changes
+
+  // Handle input changes for password
+  const handleInputChangePassword = (e) => {
+    const { name, value } = e.target;
+    setPasswordData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Handle password change
+  const handlePasswordChange = async () => {
+    if (passwordData.new_password !== passwordData.confirm_password) {
+      setPasswordError("Passwords do not match.");
+      setPasswordSuccessMessage("");
+      return;
+    }
+
+    try {
+      await changePassword(passwordData);
+      setPasswordSuccessMessage("Password updated successfully!");
+      setPasswordError("");
+      setPasswordData({ current_password: "", new_password: "", confirm_password: "" }); // Reset fields
+    } catch (error) {
+      setPasswordError("Error changing password.");
+      setPasswordSuccessMessage("");
+    }
+  };
+
+  const [aboutMe, setAboutMe] = useState("");
+  const charCount2 = aboutMe.length;
+  const [taskPreferences, setTaskPreferences] = useState([]);
+  const [expertise, setExpertise] = useState([]);
+  const [profileId, setProfileId] = useState(null); // Needed for PUT
+
+  const toggleCheckbox = (value, state, setState) => {
+    if (state.includes(value)) {
+      setState(state.filter((item) => item !== value));
+    } else {
+      setState([...state, value]);
+    }
+  };
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const profile = await fetchUserProfileData();
+        if (profile) {
+          setProfileId(profile.id);
+          setAboutMe(profile.about_me);
+          setExpertise(profile.expertise || []);
+          setTaskPreferences(profile.task_preferences || []);
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      }
+    };
+  
+    fetchProfile();
+  }, []);
+
+  const handleSave = async () => {
+    const payload = {
+      about_me: aboutMe,
+      expertise: expertise,
+      task_preferences: taskPreferences
+    };
+  
+    try {
+      const newProfile = await saveUserProfile(payload, profileId);
+      if (newProfile?.id) {
+        setProfileId(newProfile.id);
+      }
+      alert("Profile saved successfully!");
+    } catch (error) {
+      console.error("Error saving profile:", error);
+    }
+  };
   
   const [isCreatingAlbum, setIsCreatingAlbum] = useState(false);
   const [albumTitle, setAlbumTitle] = useState("");
@@ -36,14 +207,48 @@ const MySettings = () => {
   useEffect(() => {
     const loadAlbums = async () => {
       try {
-        const data = await fetchAlbumsWithImages();
-        setAlbums(data);
-      } catch (err) {
-        // handle error
+        // 1. Get current user's username
+        const userRes = await fetch(`${API_BASE}/current-user/`, {
+          headers: authHeader1()
+        });
+        if (!userRes.ok) {
+          throw new Error("Failed to fetch current user");
+        }
+        const userData = await userRes.json();
+        const currentUsername = userData.username;
+
+        // 2. Get albums for the current user
+        const res = await fetch(`${API_BASE}/albums/?user=${currentUsername}`, {
+          headers: authHeader1()
+        });
+        if (!res.ok) {
+          throw new Error("Failed to fetch albums");
+        }
+        const albumsData = await res.json();
+
+        // 3. Fetch images for each album
+        const albumsWithImages = await Promise.all(
+          albumsData.map(async (album) => {
+            const imageRes = await fetch(`${API_BASE}/album-images/?album=${album.id}`, {
+              headers: authHeader1()
+            });
+            if (!imageRes.ok) {
+              throw new Error("Failed to fetch album images");
+            }
+            const imagesData = await imageRes.json();
+            return { ...album, images: imagesData };
+          })
+        );
+
+      // 4. Save to state
+      setAlbums(albumsWithImages);
+
+      } catch (error) {
+        console.error("Error loading albums or user:", error);
       }
     };
-  
-    loadAlbums();
+
+    loadAlbums(); // ✅ Run on mount
   }, []);
   
   const handleCreateAlbum = async () => {
@@ -93,13 +298,26 @@ const MySettings = () => {
     const album = albums[albumIndex];
     const confirmed = window.confirm("Are you sure you want to delete this album?");
     if (!confirmed) return;
-  
+
     try {
-      await deleteAlbum(album.id);
+      // ✅ Delete the album using `fetch`
+      const response = await fetch(`${API_BASE}/albums/${album.id}/`, {
+          method: "DELETE",
+          headers: authHeader1(),
+      });
+
+      if (!response.ok) {
+          throw new Error("Failed to delete album.");
+      }
+
+      // ✅ Remove album from state after successful deletion
       setAlbums(albums.filter((_, index) => index !== albumIndex));
-    } catch {
-      setNotification("Failed to delete album.");
-    }
+      setNotification("Album deleted successfully!");
+
+      } catch (error) {
+          console.error("Error deleting album:", error);
+          setNotification("Failed to delete album.");
+      }
   };
 
   const [selectedFilter, setSelectedFilter] = useState("None");
@@ -157,102 +375,6 @@ const MySettings = () => {
   
   };
 
-  const [profileError, setProfileError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-  const [profileSuccessMessage, setProfileSuccessMessage] = useState(""); // For profile updates
-  const [passwordSuccessMessage, setPasswordSuccessMessage] = useState(""); // For password changes
-
-  const [userData, setUserData] = useState({
-    first_name: "",
-    email: "",
-    date_of_birth: "",
-    address: "",
-    contact_number: "",
-    image_url: "https://placehold.co/120x120.png", // Stores user's profile picture URL
-  });
-
-  const [passwordData, setPasswordData] = useState({
-    current_password: "",
-    new_password: "",
-    confirm_password: "",
-  });
-
-  // Load profile details when component mounts
-  useEffect(() => {
-    const loadUserProfile = async () => {
-      try {
-        const userProfile = await fetchUserProfile();
-        setUserData({
-          full_name: userProfile.full_name || "",
-          email: userProfile.email || "",
-          date_of_birth: userProfile.date_of_birth || "",
-          address: userProfile.address || "",
-          contact_number: userProfile.contact_number || "",
-          image_url: userProfile.image_url || "https://placehold.co/120x120.png", // Placeholder if no image
-        });
-      } catch (error) {
-        console.error("Error loading user profile:", error);
-      }
-    };
-
-    loadUserProfile();
-  }, []);
-
-
-  // Handle input changes for profile
-  const handleInputChangeUserData = (e) => {
-    const { name, value } = e.target;
-    setUserData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  // Handle profile update
-  const handleProfileSave = async () => {
-    try {
-      await updateProfile(userData);
-      setProfileSuccessMessage("Profile updated successfully!");
-      setProfileError("");
-
-      // Refresh data after update
-      const updatedProfile = await fetchUserProfile();
-      setUserData({
-        full_name: updatedProfile.full_name || "",
-        email: updatedProfile.email || "",
-        date_of_birth: updatedProfile.date_of_birth || "",
-        address: updatedProfile.address || "",
-        contact_number: updatedProfile.contact_number || "",
-        image_url: updatedProfile.image_url || "https://placehold.co/120x120.png",
-      });
-    } catch (error) {
-      setProfileError("Error updating profile.");
-      setProfileSuccessMessage("");
-    }
-  };
-
-  // Handle input changes for password
-  const handleInputChangePassword = (e) => {
-    const { name, value } = e.target;
-    setPasswordData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  // Handle password change
-  const handlePasswordChange = async () => {
-    if (passwordData.new_password !== passwordData.confirm_password) {
-      setPasswordError("Passwords do not match.");
-      setPasswordSuccessMessage("");
-      return;
-    }
-
-    try {
-      await changePassword(passwordData);
-      setPasswordSuccessMessage("Password updated successfully!");
-      setPasswordError("");
-      setPasswordData({ current_password: "", new_password: "", confirm_password: "" }); // Reset fields
-    } catch (error) {
-      setPasswordError("Error changing password.");
-      setPasswordSuccessMessage("");
-    }
-  };
-
   const [openDialog, setOpenDialog] = useState(false);
 
   // Handle opening/closing the popup
@@ -261,7 +383,8 @@ const MySettings = () => {
     setTimeout(() => {
       document.querySelector("#imageUploadInput")?.focus(); // ✅ Force focus shift inside the dialog
     }, 100);
-  };  
+  };
+
   const handleCloseDialog = () => setOpenDialog(false);
 
   // Handle image upload (send to backend)
@@ -272,56 +395,6 @@ const MySettings = () => {
       handleCloseDialog();
     } catch (error) {
       console.error("Image upload error:", error);
-    }
-  };
-
-  const [aboutMe, setAboutMe] = useState("");
-  const charCount2 = aboutMe.length;
-  const [taskPreferences, setTaskPreferences] = useState([]);
-  const [expertise, setExpertise] = useState([]);
-  const [profileId, setProfileId] = useState(null); // Needed for PUT
-
-  const toggleCheckbox = (value, state, setState) => {
-    if (state.includes(value)) {
-      setState(state.filter((item) => item !== value));
-    } else {
-      setState([...state, value]);
-    }
-  };
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const profile = await fetchUserProfileData();
-        if (profile) {
-          setProfileId(profile.id);
-          setAboutMe(profile.about_me);
-          setExpertise(profile.expertise || []);
-          setTaskPreferences(profile.task_preferences || []);
-        }
-      } catch (error) {
-        console.error("Error fetching profile:", error);
-      }
-    };
-  
-    fetchProfile();
-  }, []);
-
-  const handleSave = async () => {
-    const payload = {
-      about_me: aboutMe,
-      expertise: expertise,
-      task_preferences: taskPreferences
-    };
-  
-    try {
-      const newProfile = await saveUserProfile(payload, profileId);
-      if (newProfile?.id) {
-        setProfileId(newProfile.id);
-      }
-      alert("Profile saved successfully!");
-    } catch (error) {
-      console.error("Error saving profile:", error);
     }
   };
 
@@ -368,7 +441,16 @@ const MySettings = () => {
                       <input type="text" name="address" value={userData.address || ""} onChange={handleInputChangeUserData} className="w-3/4 border border-gray-300" />
 
                       <p className="pt-5">Contact Number</p>
-                      <input type="text" name="contact_number" value={userData.contact_number || ""} onChange={handleInputChangeUserData} className="w-3/4 border border-gray-300" />
+                        <input 
+                          type="text" 
+                          name="contact_number" 
+                          value={userData.contact_number || ""} 
+                          onChange={handleInputChangeUserData} 
+                          className="w-3/4 border border-gray-300"
+                          maxLength={10} // ✅ Limits input length
+                          pattern="[0-9]*" // ✅ Ensures only numbers
+                          inputMode="numeric" // ✅ Optimizes for mobile keyboards
+                        />
 
                       <div className="pt-5 flex justify-center sm:justify-start w-full">
                         <button className="custom-btn-container custom-btn" onClick={handleProfileSave}>Save Changes</button>

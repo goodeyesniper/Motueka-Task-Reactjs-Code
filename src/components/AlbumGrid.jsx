@@ -94,7 +94,7 @@ const AlbumGrid = ({
                 <img 
                     src={img.image} 
                     alt="Album" 
-                    className="w-full h-full object-cover object-center" 
+                    className="w-full h-full object-cover object-center cursor-pointer" 
                     onClick={() => {
                         setCurrentImageIndex(images.length - 1 - idx); // since you reversed earlier
                         setLightboxOpen(true);

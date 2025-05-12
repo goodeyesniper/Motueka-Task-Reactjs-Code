@@ -21,7 +21,7 @@ const LoginRequiredDialog = ({ open, onClose }) => {
       <DialogTitle id="login-required-dialog">Login Required</DialogTitle>
       <DialogContent>
         <Typography>
-          You must be logged in to post a task.
+          You must be logged in to make a post.
         </Typography>
       </DialogContent>
       <DialogActions>

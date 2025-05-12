@@ -7,6 +7,38 @@ import NotificationBell from './NotificationBell'
 const Navbar = () => {
     const isAuthenticated = !!localStorage.getItem("token"); // Check if token exists
     const { theme, toggleTheme } = useTheme();
+    const [profile, setProfile] = useState({});
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const token = localStorage.getItem("token");
+                const url = "http://127.0.0.1:8000/api/current-user/";
+    
+                const headers = token && token !== 'undefined'
+                    ? {
+                        Authorization: `Token ${token}`,
+                    }
+                    : {};
+    
+                const response = await fetch(url, { headers });
+    
+                if (!response.ok) {
+                    throw new Error("Failed to fetch user info");
+                }
+    
+                const data = await response.json();
+                setProfile(data);
+            } catch (err) {
+                console.error("Error fetching profile:", err);
+            }
+        };
+    
+        if (isAuthenticated) {
+            fetchProfile();
+        }
+    }, [isAuthenticated]);
+    
 
     const handleLogout = async () => {
         const token = localStorage.getItem("token"); // Retrieve token from localStorage
@@ -71,7 +103,7 @@ const Navbar = () => {
                             {isAuthenticated && (
                                 <>
                                     <li className='navbar-li nav-li-sidebar'><Link to='/mytasks' className='navbar-links nav-link-sidebar'>My Tasks</Link></li>
-                                    <li className='navbar-li nav-li-sidebar'><Link to='/profile' className='navbar-links nav-link-sidebar'>My Profile</Link></li>
+                                    <li className='navbar-li nav-li-sidebar'><Link to={`/profile/${profile?.username}`} className='navbar-links nav-link-sidebar'>My Profile</Link></li>
                                     <li className='navbar-li nav-li-sidebar'><Link to='/mysettings' className='navbar-links nav-link-sidebar'>Settings</Link></li>
                                     <li className='navbar-li nav-li-sidebar'><Link to='#' className='navbar-links nav-link-sidebar'>Notifications</Link></li>
                                     <li className='navbar-li nav-li-sidebar' 
@@ -104,7 +136,13 @@ const Navbar = () => {
                                 <>
                                     <li className='navbar-li hideOnMobile flex items-center pr-5'><Link to="/mytasks" className='custom-btn-container custom-btn'>My Tasks</Link></li>
                                     <NotificationBell />
-                                    <li className='navbar-li hideOnMobile'><Link to='/profile' className='navbar-links'>My Profile</Link></li>
+
+                                    {profile?.username && (
+                                        <li className='navbar-li hideOnMobile'>
+                                            <Link to={`/profile/${profile.username}`} className='navbar-links'>My Profile</Link>
+                                        </li>
+                                    )}
+
                                     <li className='navbar-li hideOnMobile'><Link to='/mysettings' className='navbar-links'>Settings</Link></li>
                                     <li className='navbar-li hideOnMobile' 
                                         onClick={(e) => {

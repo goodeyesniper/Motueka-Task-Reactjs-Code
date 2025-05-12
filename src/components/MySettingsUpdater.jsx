@@ -7,7 +7,7 @@ const authHeader = () => ({
 
 export const fetchAlbumsWithImages = async () => {
   try {
-    const res = await axios.get(`${API_BASE}/albums/`, {
+    const res = await axios.get(`${API_BASE}/albums/?user=${username}`, {
       headers: authHeader(),
     });
 
@@ -92,7 +92,7 @@ export const fetchUserProfile = async () => {
 
 export const updateProfile = async (data) => {
     try {
-      const response = await fetch(`${API_BASE}/profile/update/`, {
+      const response = await fetch(`${API_BASE}/profile/`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -124,28 +124,25 @@ export const changePassword = async (data) => {
   }
 };
 
-export const uploadProfileImage = async (selectedImage) => {
+// api.js or similar
+export const uploadProfileImage = async (imageFile) => {
   const formData = new FormData();
-  formData.append("image", selectedImage);
+  formData.append("image", imageFile);
 
-  try {
-    const response = await fetch(`${API_BASE}/profile/upload-image/`, { // ✅ Correct endpoint
-      method: "POST",
-      headers: {
-        Authorization: `Token ${localStorage.getItem("token")}`,
-      },
-      body: formData,
-    });
+  const response = await fetch(`${API_BASE}/profile/`, {
+    method: "PUT",
+    body: formData,
+    headers: {
+      ...authHeader(), // if using token auth
+      // ❌ Do NOT manually set Content-Type to multipart/form-data — browser handles it
+    },
+  });
 
-    if (!response.ok) {
-      throw new Error("Failed to upload image");
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Image upload error:", error);
-    throw error;
+  if (!response.ok) {
+    throw new Error("Failed to upload image");
   }
+
+  return await response.json();
 };
 
 export const fetchUserProfileData = async () => {

@@ -4,13 +4,16 @@ import TaskModal from './TaskModal';
 import Footer from './Footer';
 import LoginRequiredDialog from './LoginRequiredDialog'; // Import the new reusable component
 
+
 const Home = () => {
     const [isModalOpen, setIsModalOpen] = useState(false); // State to toggle modal visibility
     const [showLoginWarning, setShowLoginWarning] = useState(false);
-
     const isAuthenticated = localStorage.getItem('token') !== null;
     
-    const handleShowWarning = () => setShowLoginWarning(true);
+    const handleShowWarning = () => {
+        document.activeElement?.blur(); // 🟢 Remove focus from the triggering element. This removes Blocked aria-hidden on an element error in the console
+        setShowLoginWarning(true);
+    };
     const handleCloseWarning = () => setShowLoginWarning(false);
 
     useEffect(() => {
