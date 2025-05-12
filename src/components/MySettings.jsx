@@ -88,7 +88,7 @@ const MySettings = () => {
   const handleInputChangeUserData = (e) => {
     const { name, value } = e.target;
     if (name === "contact_number") {
-        // ✅ Allow only numbers and enforce max length of 10
+        // Allow only numbers and enforce max length of 10
         const sanitizedValue = value.replace(/\D/g, "").slice(0, 10);
         setUserData({ ...userData, [name]: sanitizedValue });
     } else {
@@ -248,7 +248,7 @@ const MySettings = () => {
       }
     };
 
-    loadAlbums(); // ✅ Run on mount
+    loadAlbums(); // Run on mount
   }, []);
   
   const handleCreateAlbum = async () => {
@@ -300,7 +300,7 @@ const MySettings = () => {
     if (!confirmed) return;
 
     try {
-      // ✅ Delete the album using `fetch`
+      // Delete the album using `fetch`
       const response = await fetch(`${API_BASE}/albums/${album.id}/`, {
           method: "DELETE",
           headers: authHeader1(),
@@ -310,7 +310,7 @@ const MySettings = () => {
           throw new Error("Failed to delete album.");
       }
 
-      // ✅ Remove album from state after successful deletion
+      // Remove album from state after successful deletion
       setAlbums(albums.filter((_, index) => index !== albumIndex));
       setNotification("Album deleted successfully!");
 
@@ -381,7 +381,7 @@ const MySettings = () => {
   const handleOpenDialog = () => {
     setOpenDialog(true);
     setTimeout(() => {
-      document.querySelector("#imageUploadInput")?.focus(); // ✅ Force focus shift inside the dialog
+      document.querySelector("#imageUploadInput")?.focus(); // Force focus shift inside the dialog
     }, 100);
   };
 
@@ -391,7 +391,7 @@ const MySettings = () => {
   const handleImageUpload = async (selectedImage) => {
     try {
       await uploadProfileImage(selectedImage);
-      setUserData((prev) => ({ ...prev, image_url: URL.createObjectURL(selectedImage) })); // ✅ Show new image preview
+      setUserData((prev) => ({ ...prev, image_url: URL.createObjectURL(selectedImage) })); // Show new image preview
       handleCloseDialog();
     } catch (error) {
       console.error("Image upload error:", error);
@@ -401,7 +401,6 @@ const MySettings = () => {
   const handleTaskAdded = (newTask) => {
     setTasks((prevTasks) => [newTask, ...prevTasks]);
   };
-  
   
   // Step 3: Content based on the selected item
   const renderContent = () => {
@@ -447,9 +446,9 @@ const MySettings = () => {
                           value={userData.contact_number || ""} 
                           onChange={handleInputChangeUserData} 
                           className="w-3/4 border border-gray-300"
-                          maxLength={10} // ✅ Limits input length
-                          pattern="[0-9]*" // ✅ Ensures only numbers
-                          inputMode="numeric" // ✅ Optimizes for mobile keyboards
+                          maxLength={10} // Limits input length
+                          pattern="[0-9]*" // Ensures only numbers
+                          inputMode="numeric" // Optimizes for mobile keyboards
                         />
 
                       <div className="pt-5 flex justify-center sm:justify-start w-full">

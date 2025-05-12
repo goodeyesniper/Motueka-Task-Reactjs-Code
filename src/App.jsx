@@ -12,10 +12,13 @@ import ForgotPassword from './components/ForgotPassword'
 import ProfileUserView from './components/ProfileUserView'
 import TaskView from './components/TaskView'
 import ProtectedRoute from "./components/ProtectedRoute";
+import { useState } from 'react';
+
 
 
 function App() {
-
+  const [notificationBell, setNotificationBell] = useState([]);
+  
   return (
     <>
       <Navbar />
@@ -31,7 +34,7 @@ function App() {
 
           <Route path="/mysettings" element={<ProtectedRoute><MySettings /></ProtectedRoute>} />
           <Route path="/mytasks" element={<MyTasks />} />
-          <Route path="/mytasks/:taskId" element={<TaskView />} />
+          <Route path="/mytasks/:taskId" element={<TaskView setNotificationBell={setNotificationBell} />} />
         </Routes>
     </>
   )

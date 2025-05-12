@@ -79,7 +79,7 @@ const LoginPage = () => {
             />
           </div>
 
-          {/* ✅ Add Remember Me Checkbox */}
+          {/* Add Remember Me Checkbox */}
           <div className="mb-4 flex items-center">
               <input
                 type="checkbox"

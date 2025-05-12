@@ -24,7 +24,6 @@ const AlbumGrid = ({
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-
   const openAlbum = (index) => {
     setSelectedAlbum(index);
   };

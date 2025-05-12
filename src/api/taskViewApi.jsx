@@ -40,7 +40,7 @@ export const fetchOfferDetail = async (taskId) => {
 export const submitOffer = async (taskId, message) => {
     const token = localStorage.getItem("token");
 
-    // ✅ Check if user is authenticated before proceeding
+    // Check if user is authenticated before proceeding
     if (!token) {
         throw new Error("User not authenticated");
     }
@@ -50,7 +50,7 @@ export const submitOffer = async (taskId, message) => {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                ...authHeader1(), // ✅ Include authentication header
+                ...authHeader1(), // Include authentication header
             },
             body: JSON.stringify({ message }),
         });

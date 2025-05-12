@@ -16,7 +16,7 @@ const MyTasks = () => {
     useEffect(() => {
         const fetchUserTasks = async () => {
             const token = localStorage.getItem("token");
-            if (!token || !loggedInUser) return;  // ✅ Ensure we have user data before fetching
+            if (!token || !loggedInUser) return;  // Ensure we have user data before fetching
 
             try {
                 const response = await fetch("http://127.0.0.1:8000/api/posts/", {
@@ -33,7 +33,7 @@ const MyTasks = () => {
 
                 const data = await response.json();
 
-                // ✅ Filter tasks to show only those created by the logged-in user
+                // Filter tasks to show only those created by the logged-in user
                 const userTasks = data.filter(task => task.author_username === loggedInUser.username);
                 setTasks(userTasks);
             } catch (error) {
@@ -127,7 +127,7 @@ const MyTasks = () => {
                         <p className="text-center py-2">No tasks found</p>
                     ) : (
                         <>
-                            {/* ⬇️ Table header goes here */}
+                            {/* Table header goes here */}
                             <div className='flex items-center overflow-hidden task-header pb-1'>
                                 <div className="px-4 flex justify-center w-[20px]"></div>
                                 <div className="px-2 flex justify-center sm:w-[120px] text-sm">
@@ -141,7 +141,7 @@ const MyTasks = () => {
                                 </div>
                             </div>
 
-                            {/* ⬇️ Task rows */}
+                            {/* Task rows */}
                             {tasks.map((task) => (
                                 <div
                                     key={task.id}

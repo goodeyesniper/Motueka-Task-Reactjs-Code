@@ -135,7 +135,7 @@ const Navbar = () => {
                             {isAuthenticated && (
                                 <>
                                     <li className='navbar-li hideOnMobile flex items-center pr-5'><Link to="/mytasks" className='custom-btn-container custom-btn'>My Tasks</Link></li>
-                                    <NotificationBell />
+                                    <NotificationBell currentUser={profile} />
 
                                     {profile?.username && (
                                         <li className='navbar-li hideOnMobile'>

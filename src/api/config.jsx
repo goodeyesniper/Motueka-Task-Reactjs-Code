@@ -1,9 +1,9 @@
 export const API_BASE = "http://127.0.0.1:8000/api";
 
 export const authHeader = () => {
-  const token = localStorage.getItem("token"); // ✅ Extract token
+  const token = localStorage.getItem("token");
   return {
-      Authorization: `Token ${token}`, // ✅ Use token in Authorization header
+      Authorization: `Token ${token}`,
   };
 };
 

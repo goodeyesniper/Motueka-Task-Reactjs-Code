@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import TaskModal from './TaskModal';
 import Footer from './Footer';
-import LoginRequiredDialog from './LoginRequiredDialog'; // Import the new reusable component
+import LoginRequiredDialog from './LoginRequiredDialog';
 
 
 const Home = () => {
@@ -11,7 +11,7 @@ const Home = () => {
     const isAuthenticated = localStorage.getItem('token') !== null;
     
     const handleShowWarning = () => {
-        document.activeElement?.blur(); // 🟢 Remove focus from the triggering element. This removes Blocked aria-hidden on an element error in the console
+        document.activeElement?.blur(); // Remove focus from the triggering element. This removes Blocked aria-hidden on an element error in the console
         setShowLoginWarning(true);
     };
     const handleCloseWarning = () => setShowLoginWarning(false);

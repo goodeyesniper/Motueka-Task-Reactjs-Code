@@ -20,21 +20,19 @@ const UserView = () => {
     useEffect(() => {
         const fetchData = async () => {
           try {
-            // ✅ Fetch user profile
             const userData = await fetchUserProfile();
             setProfile(userData);
             if (userData?.last_seen) {
               setLastSeen(userData.last_seen);
             }
       
-            // ✅ Fetch albums
             const albumData = await fetchAlbumsWithImages();
             setAlbums(albumData);
             
           } catch (error) {
             console.error("Error loading profile or albums:", error);
           } finally {
-            setLoading(false); // ✅ Ensure loading state is updated correctly
+            setLoading(false);
           }
         };
       
@@ -50,7 +48,7 @@ const UserView = () => {
           };
           getAlbums();
 
-        // ✅ Auto-update last_seen every 60 sec
+        // Auto-update last_seen every 60 sec
         const interval = setInterval(async () => {
           try {
             const updatedData = await fetchUserProfile();
@@ -62,7 +60,7 @@ const UserView = () => {
           }
         }, 60000);
       
-        return () => clearInterval(interval); // ✅ Cleanup interval on unmount
+        return () => clearInterval(interval); // Cleanup interval on unmount
       }, []);
     
     if (loading) return <p>Loading...</p>;
@@ -129,7 +127,7 @@ const UserView = () => {
 
                                 </div>
                                 {selectedAlbum ? (
-                                    // ✅ Inside an Album View
+                                    // Inside an Album View
                                     <div className="flex flex-col">
                                         <h2 className="font-bold py-2">Album Name: {selectedAlbum.title}</h2>
                                         <div>
@@ -152,7 +150,7 @@ const UserView = () => {
                                         </div>
                                     </div>
                                 ) : (
-                                    // ✅ Albums View
+                                    // Albums View
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {albums.map((album) => (
                                         <div key={album.id} className="bg-card-border p-4 rounded-lg cursor-pointer" onClick={() => setSelectedAlbum(album)}>
@@ -175,7 +173,7 @@ const UserView = () => {
                                     </div>
                                 )}
 
-                                {/* ✅ Image Dialog for Enlarged View */}
+                                {/* Image Dialog for Enlarged View */}
                                 <Dialog open={lightboxOpen} onClose={() => setLightboxOpen(false)} maxWidth="md" fullWidth>
                                     <DialogContent className="flex flex-col items-center justify-center">
                                         {selectedAlbum?.images?.[currentImageIndex] ? (
@@ -185,7 +183,7 @@ const UserView = () => {
                                             className="max-h-[70vh] object-contain"
                                         />
                                         ) : (
-                                        <p className="text-center">No image available</p> // ✅ Fallback to prevent errors
+                                        <p className="text-center">No image available</p>
                                         )}
 
                                         <div className="flex justify-between w-full mt-4">

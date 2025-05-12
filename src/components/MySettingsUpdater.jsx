@@ -124,7 +124,6 @@ export const changePassword = async (data) => {
   }
 };
 
-// api.js or similar
 export const uploadProfileImage = async (imageFile) => {
   const formData = new FormData();
   formData.append("image", imageFile);
@@ -134,7 +133,7 @@ export const uploadProfileImage = async (imageFile) => {
     body: formData,
     headers: {
       ...authHeader(), // if using token auth
-      // ❌ Do NOT manually set Content-Type to multipart/form-data — browser handles it
+      // Do NOT manually set Content-Type to multipart/form-data — browser handles it
     },
   });
 

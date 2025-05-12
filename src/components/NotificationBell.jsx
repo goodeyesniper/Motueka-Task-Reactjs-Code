@@ -1,10 +1,22 @@
 import { Link } from 'react-router-dom'
 import React, { useState, useEffect, useRef } from "react";
+import { fetchUserNotifications } from "../api/notifications";
 
-const NotificationBell = () => {
+const NotificationBell = ({ currentUser }) => {
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [notifications, setNotifications] = useState([]); // Example: Empty array initially
   const dropdownRef = useRef(null); // Ref for the dropdown
+
+  // Fetch notifications using API utility
+  const fetchNotifications = async () => {
+    if (!currentUser || !currentUser.username) return; // Ensure currentUser exists
+    const data = await fetchUserNotifications(currentUser.username); // Pass username
+    setNotifications(data);
+  };
+
+  useEffect(() => {
+  fetchNotifications(); // Call function when component mounts
+}, [currentUser]); // Runs every time currentUser updates
 
   // Toggle Dropdown Visibility
   const toggleDropdown = () => {
@@ -47,21 +59,15 @@ const NotificationBell = () => {
 
       {/* Dropdown Notifications */}
       {isDropdownVisible && (
-        <div
-          ref={dropdownRef} // Attach ref to dropdown
-          className="absolute top-12 left-1/2 transform -translate-x-1/2 bg-white shadow-lg rounded w-80 max-h-96 overflow-y-auto z-50"
-        >
+        <div ref={dropdownRef} className="absolute top-12 left-1/2 transform -translate-x-1/2 bg-white shadow-lg rounded w-80 max-h-96 overflow-y-auto z-50">
           <div className="p-4">
             <h2 className="text-lg font-bold text-gray-700">Notifications</h2>
           </div>
           <div className="border-t border-gray-300">
             {notifications.length > 0 ? (
-              notifications.map((notification, index) => (
-                <div
-                  key={index}
-                  className="p-4 hover:bg-gray-100 cursor-pointer"
-                >
-                  <p className="text-gray-600">{notification}</p>
+              notifications.map((notification) => (
+                <div key={notification.id} className="p-4 hover:bg-gray-100 cursor-pointer">
+                  <p className="text-gray-600">{notification.message}</p>
                 </div>
               ))
             ) : (

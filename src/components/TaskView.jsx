@@ -5,12 +5,13 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useState, useCallback } from 'react';
 import { getLastSeenStatus } from "../utils/lastSeen";
 import LoginRequiredDialog from './LoginRequiredDialog';
-import { useLoggedInUser } from '../hooks/useLoggedInUser'; // adjust the path if needed
+import { useLoggedInUser } from '../hooks/useLoggedInUser';
 import { fetchTaskDetail, fetchOfferDetail, submitOffer, fetchOfferAuthors, assignTask } from '../api/taskViewApi';
-import AssignmentModal from './AssignmentModal'; // Adjust path as needed
+import AssignmentModal from './AssignmentModal';
+import { fetchUserNotifications } from "../api/notifications";
+import { API_BASE, authHeader1 } from '../api/config';
 
-
-const TaskView = () => {
+const TaskView = ({ setNotificationBell }) => {
     const { taskId } = useParams();
     const [taskDetail, setTaskDetail] = useState(null);
     const [offers, setOffers] = useState([]);
@@ -21,20 +22,19 @@ const TaskView = () => {
     const [offerAuthors, setOfferAuthors] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const isAuthenticated = localStorage.getItem('token') !== null;
-    
 
     useEffect(() => {
         if (taskId) {
             fetchAuthors();
         }
-    }, [taskId]); // ✅ Calls `fetchAuthors` only when `taskId` changes
+    }, [taskId]);
 
     useEffect(() => {
-        console.log("THE AUTHORS ARE:", offerAuthors);  // ✅ Log after state is updated
-    }, [offerAuthors]);  // ✅ Runs when offerAuthors updates
+        console.log("THE AUTHORS ARE:", offerAuthors);
+    }, [offerAuthors]);
 
     const handleShowWarning = () => {
-        document.activeElement?.blur(); // 🟢 Remove focus from the triggering element. This removes Blocked aria-hidden on an element error in the console
+        document.activeElement?.blur(); // Remove focus from the triggering element. This removes Blocked aria-hidden on an element error in the console
         setLoginDialogOpen(true);
     };
     const handleCloseWarning = () => setLoginDialogOpen(false);
@@ -79,24 +79,23 @@ const TaskView = () => {
         e.preventDefault();
 
         if (!currentUser) {
-            setLoginDialogOpen(true);  // ✅ Show login dialog
+            setLoginDialogOpen(true);
             return;
         }
 
         if (!offerMessage.trim()) return;
     
         try {
-            const newOffer = await submitOffer(taskId, offerMessage);  // ✅ Call external function
+            const newOffer = await submitOffer(taskId, offerMessage);  // Call external function
     
             setOffers((prevOffers) => [...prevOffers, newOffer]);
-            setOfferMessage(""); // ✅ Clear input after success
+            setOfferMessage("");
             setNotification("Offer sent!");
         } catch (error) {
             console.error("Error submitting offer:", error);
             setNotification("Failed to send offer.");
         }
     };
-
 
     const fetchAuthors = useCallback(async () => {
         try {
@@ -108,33 +107,21 @@ const TaskView = () => {
         } catch (error) {
             console.error("Error fetching offer authors:", error);
         }
-    }, [taskId]); // ✅ Dependencies ensure re-execution when `taskId` changes
-
+    }, [taskId]); // Dependencies ensure re-execution when `taskId` changes
 
     const handleAssignTask = async (username) => {
         try {
-            // ✅ Extract username if not provided
-            if (!username && offerAuthors.length > 0) {
-                username = offerAuthors[0].username;
-                console.log("Automatically selecting username:", username);
-            }
-
-            // ✅ Ensure a valid username exists
             if (!username) {
                 console.error("Error: Username is undefined!");
                 return;
             }
-
-            // ✅ Use the refactored `assignTask` function
             const updatedTask = await assignTask(taskId, username);
-            console.log("Updated Task:", updatedTask); // Debugging response
+            console.log("Updated Task:", updatedTask);
 
-            // ✅ Refetch task details to ensure the UI updates immediately
             const refreshedTask = await fetchTaskDetail(taskId);
             setTaskDetail(refreshedTask);
+            fetchUserNotifications(username).then(setNotificationBell);
 
-            
-            // setTaskDetail(updatedTask);
         } catch (error) {
             console.error("Error assigning task:", error);
         }
@@ -287,7 +274,6 @@ const TaskView = () => {
                                                 ) : null}
                                                 </div>
                                             </div>
-                                    
 
                                     {/* Sample submitted comments */}
                                     {offers.map((offer, index) => (

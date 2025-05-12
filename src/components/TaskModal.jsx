@@ -70,8 +70,6 @@ const TaskModal = ({ onClose, onTaskAdded }) => {
     setDragging(false);
   };
 
- 
-
   // Validation for disabling the Next button on Page 1 only
   const isNextDisabled =
     page === 1 &&
@@ -131,13 +129,12 @@ const TaskModal = ({ onClose, onTaskAdded }) => {
 
         if (response.ok) {
             const newTask = await response.json();
-            if (onTaskAdded) {  // ✅ Prevents error if undefined
+            if (onTaskAdded) {  // Prevents error if undefined
               onTaskAdded(newTask);
             } else {
                 console.error("onTaskAdded is not defined in TaskModal props.");
             }
       
-            
             // onTaskAdded(newTask); // Update BrowseTask
 
             // Reset form values

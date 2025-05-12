@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import TaskModal from './TaskModal';
-import LoginRequiredDialog from './LoginRequiredDialog'; // Import the new reusable component
+import LoginRequiredDialog from './LoginRequiredDialog';
 
 const Hero = ({ onTaskAdded }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -13,7 +13,7 @@ const Hero = ({ onTaskAdded }) => {
   const handleCloseModal = () => setIsModalOpen(false);
 
   const handleShowWarning = () => {
-        document.activeElement?.blur(); // 🟢 Remove focus from the triggering element. This removes Blocked aria-hidden on an element error in the console
+        document.activeElement?.blur(); // Remove focus from the triggering element. This removes Blocked aria-hidden on an element error in the console
         setShowLoginWarning(true);
     };
   const handleCloseWarning = () => setShowLoginWarning(false);
@@ -47,7 +47,6 @@ const Hero = ({ onTaskAdded }) => {
         <TaskModal onClose={handleCloseModal} onTaskAdded={onTaskAdded} />
       )}
 
-      {/* Use the reusable component */}
       <LoginRequiredDialog open={showLoginWarning} onClose={handleCloseWarning} />
     </>
   );
