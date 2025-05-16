@@ -12,16 +12,43 @@ import ForgotPassword from './components/ForgotPassword'
 import ProfileUserView from './components/ProfileUserView'
 import TaskView from './components/TaskView'
 import ProtectedRoute from "./components/ProtectedRoute";
-import { useState } from 'react';
-
+import { useState, useEffect } from "react";
+import { fetchUserNotifications } from "./api/notifications"; // Import API utility
+import { useLoggedInUser } from './hooks/useLoggedInUser';
 
 
 function App() {
   const [notificationBell, setNotificationBell] = useState([]);
+  const currentUser = useLoggedInUser();
+
+  // Centralized Notification Fetch
+  useEffect(() => {
+    if (currentUser === null) {
+      console.log("User logged out, no notifications needed.");
+      return; // Stop execution early when logged out
+    }
+
+    if (!currentUser || !currentUser.username) {
+      console.warn("Skipping notification fetch: Invalid currentUser");
+      return;
+    }
+
+    const fetchNotifications = async () => {
+      if (!currentUser || !currentUser.username) {
+        console.warn("Skipping notification fetch: Invalid currentUser");
+        return;
+      }
+      const data = await fetchUserNotifications(currentUser.username);
+      console.log("Global Fetched Notifications:", data);
+      setNotificationBell(data);
+    };
+
+    fetchNotifications();
+  }, [currentUser]); // Runs whenever `currentUser` changes
   
   return (
     <>
-      <Navbar />
+      <Navbar notifications={notificationBell} />
 
         <Routes>
           <Route path="/" element={<Home />} />
@@ -32,7 +59,7 @@ function App() {
           <Route path="/profile/:username" element={<ProfileView />}/>
           <Route path="/profileuser/:username" element={<ProfileUserView />}/>
 
-          <Route path="/mysettings" element={<ProtectedRoute><MySettings /></ProtectedRoute>} />
+          <Route path="/mysettings" element={<ProtectedRoute><MySettings notifications={notificationBell} setNotificationBell={setNotificationBell} /></ProtectedRoute>} />
           <Route path="/mytasks" element={<MyTasks />} />
           <Route path="/mytasks/:taskId" element={<TaskView setNotificationBell={setNotificationBell} />} />
         </Routes>

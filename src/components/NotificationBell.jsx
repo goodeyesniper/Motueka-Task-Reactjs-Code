@@ -2,21 +2,9 @@ import { Link } from 'react-router-dom'
 import React, { useState, useEffect, useRef } from "react";
 import { fetchUserNotifications } from "../api/notifications";
 
-const NotificationBell = ({ currentUser }) => {
+const NotificationBell = ({ notifications = [] }) => {
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-  const [notifications, setNotifications] = useState([]); // Example: Empty array initially
   const dropdownRef = useRef(null); // Ref for the dropdown
-
-  // Fetch notifications using API utility
-  const fetchNotifications = async () => {
-    if (!currentUser || !currentUser.username) return; // Ensure currentUser exists
-    const data = await fetchUserNotifications(currentUser.username); // Pass username
-    setNotifications(data);
-  };
-
-  useEffect(() => {
-  fetchNotifications(); // Call function when component mounts
-}, [currentUser]); // Runs every time currentUser updates
 
   // Toggle Dropdown Visibility
   const toggleDropdown = () => {
@@ -60,18 +48,27 @@ const NotificationBell = ({ currentUser }) => {
       {/* Dropdown Notifications */}
       {isDropdownVisible && (
         <div ref={dropdownRef} className="absolute top-12 left-1/2 transform -translate-x-1/2 bg-white shadow-lg rounded w-80 max-h-96 overflow-y-auto z-50">
-          <div className="p-4">
-            <h2 className="text-lg font-bold text-gray-700">Notifications</h2>
-          </div>
-          <div className="border-t border-gray-300">
-            {notifications.length > 0 ? (
+          <Link to="/mysettings?tab=Notifications">
+            <div className="p-4">
+              <h2 className="font-bold text-gray-700">Notifications</h2>
+            </div>
+          </Link>
+          
+          <div className="">
+            {notifications && notifications.length > 0 ? (
               notifications.map((notification) => (
-                <div key={notification.id} className="p-4 hover:bg-gray-100 cursor-pointer">
-                  <p className="text-gray-600">{notification.message}</p>
+                <div key={notification.id} className="px-4 py-2 border-t border-[#e5e7eb] hover:bg-gray-100 cursor-pointer">
+                  {notification.task_id ? (
+                    <Link to={`/mytasks/${notification.task_id}`} className="text-[#101828] text-sm font-bold">
+                      {notification.message}
+                    </Link>
+                  ) : (
+                    <p className="text-black font-bold">{notification.message}</p>
+                  )}
                 </div>
               ))
             ) : (
-              <div className="p-4 text-gray-500">No notifications to show</div>
+              <div className="px-4 py-2 text-gray-500">No notifications to show</div>
             )}
           </div>
         </div>

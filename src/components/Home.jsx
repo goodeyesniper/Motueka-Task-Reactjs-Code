@@ -44,7 +44,7 @@ const Home = () => {
                     <div className="grid grid-rows-1 lg:grid-rows-2 gap-10 place-items-center">
                         <div className="flex flex-col items-center justify-center md:items-start text-center md:text-start rounded-[8px] p-5 bg-card-color bg-card-border w-full sm:w-[500px]">
                             <h1 className='text-[1.4rem] font-bold pb-5'>Need help with a house task?</h1>
-                            <p className='pb-8'>Share your task requirements in Motueka Tasks. It's always free to post tasks.</p>
+                            <p className='pb-8'>Share your task requirements in Motueka Tasks. It's always free to post.</p>
                             <button className="custom-btn-container custom-btn" onClick={isAuthenticated ? handleOpenModal : handleShowWarning}>
                                 Post a Task
                             </button>

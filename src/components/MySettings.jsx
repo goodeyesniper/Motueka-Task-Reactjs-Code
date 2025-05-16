@@ -10,13 +10,16 @@ import {
 import ImageUploadDialog from "./ImageUploadDialog";
 import AlbumGrid from './AlbumGrid'
 import Hero from './Hero';
+import Sidebar from "./Sidebar";
 
 import { API_BASE, authHeader, authHeader1 } from "../api/config";
 
-const MySettings = () => {
+const MySettings = ({ notifications, setNotificationBell }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialTab = searchParams.get("tab") || "Account Settings";
   const [selectedItem, setSelectedItem] = useState(initialTab);
+
+  
 
   // Step 2: Function to handle item selection
   useEffect(() => {
@@ -321,18 +324,18 @@ const MySettings = () => {
   };
 
   const [selectedFilter, setSelectedFilter] = useState("None");
-  const [notifications, setNotifications] = useState([
-    { id: 1, text: "Notification 1", read: false, fullDetails: "Details of Notification 1" },
-    { id: 2, text: "Notification 2", read: true, fullDetails: "Details of Notification 2" },
-    { id: 3, text: "Notification 3", read: false, fullDetails: "Details of Notification 3" },
-  ]);
+  // const [notifications, setNotifications] = useState([
+  //   { id: 1, text: "Notification 1", read: false, fullDetails: "Details of Notification 1" },
+  //   { id: 2, text: "Notification 2", read: true, fullDetails: "Details of Notification 2" },
+  //   { id: 3, text: "Notification 3", read: false, fullDetails: "Details of Notification 3" },
+  // ]);
   const [selectedNotifications, setSelectedNotifications] = useState([]);
 
   const handleFilterChange = (filter) => {
     setSelectedFilter(filter);
     const updatedSelection = notifications.filter((notif) => {
-      if (filter === "Read") return notif.read;
-      if (filter === "Unread") return !notif.read;
+      if (filter === "Read") return notif.is_read;
+      if (filter === "Unread") return !notif.is_read;
       if (filter === "All") return true;
       return false; // "None"
     }).map((notif) => notif.id);
@@ -345,18 +348,53 @@ const MySettings = () => {
     );
   };
 
+  // const handleDelete = () => {
+  //   setNotifications((prev) => prev.filter((notif) => !selectedNotifications.includes(notif.id)));
+  //   setSelectedNotifications([]);
+  // };
+
+  // const handleMarkAsRead = () => {
+  //   setNotifications((prev) =>
+  //     prev.map((notif) =>
+  //       selectedNotifications.includes(notif.id) ? { ...notif, read: true } : notif
+  //     )
+  //   );
+  // };
+
   const handleDelete = () => {
-    setNotifications((prev) => prev.filter((notif) => !selectedNotifications.includes(notif.id)));
-    setSelectedNotifications([]);
+    const updatedNotifications = notifications.filter((notif) => !selectedNotifications.includes(notif.id));
+    setNotificationBell(updatedNotifications); // Update global state
+    
+    // Optionally send delete request to backend
+    selectedNotifications.forEach(async (notifId) => {
+      await fetch(`${API_BASE}/notifications/${notifId}/delete/`, {
+        method: "DELETE",
+        headers: { "Authorization": `Token ${localStorage.getItem("token")}` }
+      });
+    });
+
+    setSelectedNotifications([]); // Reset selection
   };
 
   const handleMarkAsRead = () => {
-    setNotifications((prev) =>
-      prev.map((notif) =>
-        selectedNotifications.includes(notif.id) ? { ...notif, read: true } : notif
-      )
+    // Modify notifications in App.js state
+    const updatedNotifications = notifications.map((notif) =>
+      selectedNotifications.includes(notif.id) ? { ...notif, is_read: true } : notif
     );
+
+    setNotificationBell(updatedNotifications); // Update global state
+
+    // Optionally send update request to backend
+    selectedNotifications.forEach(async (notifId) => {
+      await fetch(`${API_BASE}/notifications/${notifId}/read/`, {
+        method: "PATCH",
+        headers: { "Authorization": `Token ${localStorage.getItem("token")}` }
+      });
+    });
+
+    setSelectedNotifications([]); // Reset selection
   };
+
 
   const [deactivateConfirmation, setDeactivateConfirmation] = useState(false); // Checkbox state
   const [selectedReason, setSelectedReason] = useState(""); // Track selected radio button
@@ -620,12 +658,12 @@ const MySettings = () => {
                     <span
                       style={{
                         cursor: "pointer",
-                        textDecoration: notif.read ? "line-through" : "none",
+                        textDecoration: notif.is_read ? "line-through" : "none",
                       }}
-                      onClick={() => alert(notif.fullDetails)}
+                      onClick={() => alert(notif.message)}
                       className="pl-2"
                     >
-                      {notif.text}
+                      {notif.message}
                     </span>
                   </div>                  
                   ))}
@@ -730,30 +768,10 @@ const MySettings = () => {
 
       <div className="container-fluid flex justify-center pb-10">
         <div className="container max-w-6xl pt-3 px-2">
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-x-0 sm:gap-x-2 gap-y-4 mt-3">
-            <div className="flex flex-col col-span-4 sm:col-span-1">
-              <ul className="bg-card-border rounded">
-                {[
-                  "Account Settings",
-                  "Personal Profile",
-                  "My Portfolio",
-                  "Notifications",
-                  "Verification",
-                  "Deactivate Account",
-                ].map((item) => (
-                  <li
-                    key={item}
-                    className={`px-5 py-2 sm:py-3 cursor-pointer ${
-                      selectedItem === item ? "font-bold highlight-selector" : ""
-                    }`}
-                    onClick={() => handleSelection(item)}
-                  >
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="flex flex-col col-span-4 sm:col-span-3 bg-card-border rounded px-5 pt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-x-0 sm:gap-x-2 gap-y-4">
+            {/* Sidebar Component */}
+            <Sidebar selectedItem={selectedItem} handleSelection={handleSelection} />
+            <div className="flex flex-col col-span-4 md:col-span-3 bg-card-border rounded px-5 pt-2">
               {renderContent()}
             </div>
           </div>

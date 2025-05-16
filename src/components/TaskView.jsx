@@ -119,6 +119,7 @@ const TaskView = ({ setNotificationBell }) => {
             console.log("Updated Task:", updatedTask);
 
             const refreshedTask = await fetchTaskDetail(taskId);
+            
             setTaskDetail(refreshedTask);
             fetchUserNotifications(username).then(setNotificationBell);
 
@@ -280,7 +281,11 @@ const TaskView = ({ setNotificationBell }) => {
                                         <div key={index} className='p-2 my-4 bg-card-border-2 rounded w-full'>
                                             <div className='flex justify-between items-start'>
                                                 <div className='flex items-center'>
-                                                    <img src="https://placehold.co/60x60" alt="" className='rounded-full sm:block hidden' />
+                                                    <div className="flex-shrink-0">
+                                                        {offer?.profile_image && (
+                                                            <Profile img={offer?.profile_image} size={60} />
+                                                        )}
+                                                    </div>
                                                     <div className='px-2 sm:px-4'>
                                                     <p>{offer.full_name}</p>
                                                     <span className='text-xs'>{new Date(offer.created_at).toLocaleString()}</span>

@@ -83,10 +83,6 @@
     width: 100%;
 }
 
-/* .nav-li-sidebar:hover {
-    background-color: #f0f0f0 !important;
-} */
-
 .menu-button {
     display: none;
 }
@@ -102,3 +98,36 @@
         padding: 0 10px;
     }
 }
+
+.menu-button-mysettings {
+    display: none;
+}
+
+@media (max-width: 767px) {
+    .hideOnMobile1 {
+        display: none;
+    }
+    .menu-button-mysettings {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        padding: 0 10px;
+    }
+}
+
+/* MySettings Sidebar custom settings */
+.custom-drawer .MuiPaper-root {
+    width: auto;
+    height: auto;
+    max-height: fit-content;
+    /* padding: 10px; */
+    background-color: var(--bg-card-color);
+    color: var(--text-color);
+    border-radius: 5px;
+}
+
+.custom-drawer .MuiListItem-root.highlight-selector {
+    background-color: var(--selected-bg-color); /* Optional: Highlight selected item */
+    font-weight: bold;
+}
+

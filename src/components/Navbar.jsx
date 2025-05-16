@@ -4,7 +4,7 @@ import { useTheme } from './ThemeContext'; // Adjust path if needed
 import NotificationBell from './NotificationBell'
 
 
-const Navbar = () => {
+const Navbar = ({ notifications }) => {
     const isAuthenticated = !!localStorage.getItem("token"); // Check if token exists
     const { theme, toggleTheme } = useTheme();
     const [profile, setProfile] = useState({});
@@ -96,8 +96,9 @@ const Navbar = () => {
             <div className="navbar-container container-fluid flex justify-center content-center bg-color-container sticky top-0 z-50">
                 <div className="container max-w-6xl">
                     <nav className="navbar">
+                        
                         {/* Navigation Sidebar */}
-                        <ul ref={sidebarRef} className={`bg-card-border navbar-ul ul-style nav-sidebar ${isSidebarVisible ? 'show-sidebar' : 'hide-sidebar'}`}>
+                        <ul ref={sidebarRef} className={`bg-card-border rounded navbar-ul ul-style nav-sidebar ${isSidebarVisible ? 'show-sidebar' : 'hide-sidebar'}`}>
 
                             {/* Show when logged in */}
                             {isAuthenticated && (
@@ -105,7 +106,7 @@ const Navbar = () => {
                                     <li className='navbar-li nav-li-sidebar'><Link to='/mytasks' className='navbar-links nav-link-sidebar'>My Tasks</Link></li>
                                     <li className='navbar-li nav-li-sidebar'><Link to={`/profile/${profile?.username}`} className='navbar-links nav-link-sidebar'>My Profile</Link></li>
                                     <li className='navbar-li nav-li-sidebar'><Link to='/mysettings' className='navbar-links nav-link-sidebar'>Settings</Link></li>
-                                    <li className='navbar-li nav-li-sidebar'><Link to='#' className='navbar-links nav-link-sidebar'>Notifications</Link></li>
+                                    <li className='navbar-li nav-li-sidebar'><Link to="/mysettings?tab=Notifications" className='navbar-links nav-link-sidebar'>Notifications</Link></li>
                                     <li className='navbar-li nav-li-sidebar' 
                                         onClick={(e) => {
                                             e.preventDefault(); // Prevent navigation
@@ -130,19 +131,16 @@ const Navbar = () => {
                         <ul className='navbar-ul ul-style flex'>
                             {/* Always show */}
                             <li className='navbar-li'><Link to='/' className='navbar-links whitespace-nowrap'>Motueka Task</Link></li>
-
+                            
                             {/* Show when logged in */}
                             {isAuthenticated && (
                                 <>
                                     <li className='navbar-li hideOnMobile flex items-center pr-5'><Link to="/mytasks" className='custom-btn-container custom-btn'>My Tasks</Link></li>
-                                    <NotificationBell currentUser={profile} />
-
                                     {profile?.username && (
                                         <li className='navbar-li hideOnMobile'>
                                             <Link to={`/profile/${profile.username}`} className='navbar-links'>My Profile</Link>
                                         </li>
                                     )}
-
                                     <li className='navbar-li hideOnMobile'><Link to='/mysettings' className='navbar-links'>Settings</Link></li>
                                     <li className='navbar-li hideOnMobile' 
                                         onClick={(e) => {
@@ -152,6 +150,8 @@ const Navbar = () => {
                                     >
                                         <Link to='#' className='navbar-links'>Logout</Link>
                                     </li>
+
+                                    <NotificationBell notifications={notifications} />
                                 </>
                             )}
 
@@ -164,6 +164,7 @@ const Navbar = () => {
                             )}
                             
                             {/* Always show */}
+
                             <li className="navbar-li px-3 flex items-center cursor-pointer" onClick={toggleTheme}>
                                 {theme === 'light' ? (
                                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="currentColor">
