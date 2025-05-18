@@ -1,79 +1,130 @@
-import { Link } from 'react-router-dom'
-import React, { useState, useEffect, useRef } from "react";
-import { fetchUserNotifications } from "../api/notifications";
+import React, { useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
+import IconButton from "@mui/material/IconButton";
+import Badge from "@mui/material/Badge";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
+import Box from "@mui/material/Box";
+import { API_BASE, authHeader1 } from "../api/config";
+import { useNavigate } from "react-router-dom";
 
-const NotificationBell = ({ notifications = [] }) => {
-  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-  const dropdownRef = useRef(null); // Ref for the dropdown
 
-  // Toggle Dropdown Visibility
-  const toggleDropdown = () => {
-    setIsDropdownVisible(!isDropdownVisible);
+// Replace this with your actual API call function
+const markNotificationAsRead = async (id) => {
+  try {
+    await fetch(`${API_BASE}/notifications/${id}/read/`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        ...authHeader1(),
+      },
+      body: JSON.stringify({}) // ✅ even if the body is empty
+    });
+  } catch (error) {
+    console.error("Error marking notification as read:", error);
+  }
+  
+};
+
+// Transfered to App.jsx for global call
+// const fetchNotifications = async () => {
+//   const response = await fetch(`${API_BASE}/notifications/`, {
+//     headers: authHeader1(),
+//   });
+//   const data = await response.json();
+//   setNotifications(data);
+// };
+
+const NotificationBell = ({ notifications = [], onNotificationsUpdate }) => {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const navigate = useNavigate();
+
+  const handleOpen = async (event) => {
+    setAnchorEl(event.currentTarget);
   };
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleOutsideClick = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsDropdownVisible(false); // Close dropdown if click is outside
-      }
-    };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
-    // Add event listener
-    document.addEventListener("mousedown", handleOutsideClick);
-
-    return () => {
-      // Cleanup event listener
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
-  }, []);
+  const unreadCount = notifications.filter((n) => !n.is_read).length;
 
   return (
-    <div className="relative">
-      {/* Notification Bell */}
-      <li className="navbar-li hideOnMobile">
-        <Link to="#" onClick={toggleDropdown} className="navbar-links relative">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            height="24px"
-            viewBox="0 -960 960 960"
-            width="24px"
-            fill="#0066A2"
-          >
-            <path d="M160-200v-80h80v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h80v80H160Zm320-300Zm0 420q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80ZM320-280h320v-280q0-66-47-113t-113-47q-66 0-113 47t-47 113v280Z" />
-          </svg>
-        </Link>
-      </li>
+    <>
+      <div className="relative">
+        <IconButton color="warning" onClick={handleOpen}>
+          <Badge badgeContent={unreadCount} color="error">
+            <NotificationsIcon />
+          </Badge>
+        </IconButton>
 
-      {/* Dropdown Notifications */}
-      {isDropdownVisible && (
-        <div ref={dropdownRef} className="absolute top-12 left-1/2 transform -translate-x-1/2 bg-white shadow-lg rounded w-80 max-h-96 overflow-y-auto z-50">
-          <Link to="/mysettings?tab=Notifications">
-            <div className="p-4">
-              <h2 className="font-bold text-gray-700">Notifications</h2>
-            </div>
-          </Link>
-          
-          <div className="">
-            {notifications && notifications.length > 0 ? (
-              notifications.map((notification) => (
-                <div key={notification.id} className="px-4 py-2 border-t border-[#e5e7eb] hover:bg-gray-100 cursor-pointer">
-                  {notification.task_id ? (
-                    <Link to={`/mytasks/${notification.task_id}`} className="text-[#101828] text-sm font-bold">
-                      {notification.message}
-                    </Link>
-                  ) : (
-                    <p className="text-black font-bold">{notification.message}</p>
-                  )}
-                </div>
-              ))
-            ) : (
-              <div className="px-4 py-2 text-gray-500">No notifications to show</div>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
+        <Menu
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          PaperProps={{
+            sx: { width: 320, maxHeight: 400 },
+          }}
+        >
+          <Box px={2} py={1}>
+            <Typography variant="subtitle1" fontWeight="bold">
+              <RouterLink to="/mysettings?tab=Notifications">Notifications</RouterLink>
+            </Typography>
+          </Box>
+          <Divider />
+
+          {notifications.length > 0 ? (
+            notifications.map((notification) => (
+              <MenuItem
+                key={notification.id}
+                onClick={async () => {
+                  if (!notification.is_read) {
+                    await markNotificationAsRead(notification.id);
+                    await onNotificationsUpdate?.();
+                  }
+                  handleClose();
+                  if (notification.task_id) {
+                    navigate(`/mytasks/${notification.task_id}`);
+                  }
+                }}
+                sx={{
+                  whiteSpace: "normal",
+                  alignItems: "flex-start",
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  fontWeight={notification.is_read ? "normal" : "bold"}
+                >
+                  {notification.message}
+                </Typography>
+              </MenuItem>
+            ))
+          ) : (
+            <MenuItem disabled>
+              <Typography variant="body2" color="textSecondary">
+                No notifications to show
+              </Typography>
+            </MenuItem>
+          )}
+
+          <Divider />
+          <MenuItem
+            component={RouterLink}
+            to="/mysettings?tab=Notifications"
+            onClick={handleClose}
+          >
+            <Typography variant="body2" color="primary">
+              View all
+            </Typography>
+          </MenuItem>
+        </Menu>
+      </div>
+    </>
   );
 };
 

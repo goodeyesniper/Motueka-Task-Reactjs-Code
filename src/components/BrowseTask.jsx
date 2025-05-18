@@ -108,20 +108,20 @@ const BrowseTask = () => {
       <Hero onTaskAdded={handleTaskAdded} />
 
       <div className="container-fluid flex justify-center">
-        <div className="container max-w-6xl pt-3 px-2">
-          <div className="max-w-6xl mb-5">
+        <div className="container max-w-6xl px-2 py-3">
+          {/* <div className="max-w-6xl mb-5">
             <h1><strong>This is where the tasks goes!</strong></h1>
-          </div>
+          </div> */}
 
           {tasks?.map(task => (
             <div
               key={task.id}
-              className="max-w-6xl grid grid-cols-1 sm:grid-cols-4 gap-0 sm:gap-4 gap-y-2 mb-3 bg-card-border-2 rounded py-4 px-2"
+              className="max-w-6xl grid grid-cols-1 sm:grid-cols-4 gap-0 sm:gap-4 gap-y-2 mb-3 bg-card-border-2 rounded py-4 px-2 mt-3"
             >
               <div className="flex flex-row sm:flex-col justify-center sm:justify-start items-center pt-2 gap-2">
                 
                 {/* Info Container */}
-                <div className="flex flex-col items-start sm:items-center text-start sm:text-center overflow-hidden">
+                <div className="flex flex-col items-center text-center overflow-hidden">
                   <Link to={`/profile/${task.author_profile?.username}`}>
               
                     {/* Image Container */}
@@ -166,17 +166,14 @@ const BrowseTask = () => {
                     <button className='custom-btn-container custom-btn text-sm'>{task.status.charAt(0).toUpperCase() + task.status.slice(1)}</button>
                   </div>
                 </div>
-
-                <div
-                  onClick={() => navigate(`/mytasks/${task.id}`)}
-                  className='cursor-pointer'
-                >
-                  <h4 className="pb-1">Title: &nbsp;<span className='font-bold'>{task.task_title}</span></h4>
-                  <p className="pb-1 border-bottom">Details: &nbsp;<span className='font-bold'>{task.task_details}</span></p>
+                <div>
+                  <h4 className="pb-1">Title: &nbsp;
+                    <span className='font-bold cursor-pointer' onClick={() => navigate(`/mytasks/${task.id}`)}>{task.task_title}</span>
+                  </h4>
+                  <p className="pb-1 border-bottom" >Details: &nbsp;
+                    <span className='font-bold cursor-pointer' onClick={() => navigate(`/mytasks/${task.id}`)}>{task.task_details}</span>
+                  </p>
                 </div>
-
-
-
                   <div className="grid grid-cols-2 text-sm sm:text-md py-2">
                     <div className="col-span-2 sm:col-span-1">
                       <div className="pb-1 flex items-center">

@@ -121,7 +121,7 @@ const TaskView = ({ setNotificationBell }) => {
             const refreshedTask = await fetchTaskDetail(taskId);
             
             setTaskDetail(refreshedTask);
-            fetchUserNotifications(username).then(setNotificationBell);
+            // fetchUserNotifications(username).then(setNotificationBell);
 
         } catch (error) {
             console.error("Error assigning task:", error);
@@ -146,7 +146,7 @@ const TaskView = ({ setNotificationBell }) => {
 
             <div className="container-fluid flex justify-center">
                 <div className="container max-w-6xl pt-3 px-2">
-                    <h1>test!</h1>
+                    {/* <h1>test!</h1> */}
                     <div className="max-w-6xl grid grid-cols-1 sm:grid-cols-4 gap-0 sm:gap-4 gap-y-2 mb-3 bg-card-border-2 rounded py-4 px-2">
                         <div className="flex flex-row sm:flex-col justify-center sm:justify-start items-center pt-2 gap-2">
                             {/* Info Container */}
@@ -243,7 +243,7 @@ const TaskView = ({ setNotificationBell }) => {
                             
                             <div className='border-top py-5 mt-5'>
                                 {/* Start of offers area */}
-                                <div className='bg-input-container rounded px-2 pb-5 w-full sm:w-5/6 mt-5 mb-10'>
+                                <div className='bg-input-container rounded px-2 pb-5 w-full mt-5 mb-10'>
                                     <div className='flex justify-between pt-2'>
                                         <h1 className='font-bold'>Offers ({offerAuthors.length})</h1>
                                             <div className='flex overflow-hidden'>
@@ -278,7 +278,7 @@ const TaskView = ({ setNotificationBell }) => {
 
                                     {/* Sample submitted comments */}
                                     {offers.map((offer, index) => (
-                                        <div key={index} className='p-2 my-4 bg-card-border-2 rounded w-full'>
+                                        <div key={index} className='p-2 my-4 bg-input-card-border rounded w-full'>
                                             <div className='flex justify-between items-start'>
                                                 <div className='flex items-center'>
                                                     <div className="flex-shrink-0">

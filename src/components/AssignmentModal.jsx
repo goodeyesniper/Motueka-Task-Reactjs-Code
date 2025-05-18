@@ -11,6 +11,7 @@ import {
     IconButton
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { useTheme } from './ThemeContext'
 
 const style = {
     position: 'absolute',
@@ -18,13 +19,15 @@ const style = {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: 400,
-    bgcolor: 'background.paper',
     borderRadius: 2,
+    bgcolor: '#fff',
+    color: '#000',
     boxShadow: 24,
     p: 4,
 };
 
 const AssignmentModal = ({ open, onClose, offerAuthors, onAssign }) => {
+    const theme = useTheme();
     return (
         <Modal open={open} onClose={onClose}>
             <Box sx={style}>
@@ -35,7 +38,7 @@ const AssignmentModal = ({ open, onClose, offerAuthors, onAssign }) => {
                     </IconButton>
                 </Box>
 
-                <Typography sx={{ mt: 2 }}>Select a user to assign:</Typography>
+                <Typography variant="h7" sx={{ mt: 1 }}>Select a user to assign:</Typography>
 
                 <List>
                     {offerAuthors.map((author) => (
@@ -48,12 +51,16 @@ const AssignmentModal = ({ open, onClose, offerAuthors, onAssign }) => {
                                         onAssign(author.username);
                                         onClose(); // Close modal after assignment
                                     }}
+                                    className='custom-btn-container custom-btn'
                                 >
                                     Assign
                                 </Button>
                             }
                         >
-                            <ListItemText primary={author.full_name || author.username} />
+                            <ListItemText 
+                                primary={author.full_name || author.username}
+                                primaryTypographyProps={{ fontSize: '1.0rem', fontWeight: '800' }}
+                            />
                         </ListItem>
                     ))}
                 </List>

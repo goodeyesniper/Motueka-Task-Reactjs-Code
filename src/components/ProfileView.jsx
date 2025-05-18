@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import Profile from './Profile';
 
 
-import { API_BASE, authHeader, authHeader1 } from "../api/config";
+import { API_BASE, authHeader1 } from "../api/config";
 import { useParams } from "react-router-dom";
 
 const ProfileView = () => {
@@ -23,6 +23,31 @@ const ProfileView = () => {
     const [currentUsername, setCurrentUsername] = useState(null);
     const { username } = useParams();
 
+    const [reviews, setReviews] = useState([]);
+    const [reviewsLoading, setReviewsLoading] = useState(true);
+
+    const fetchReviews = async () => {
+        try {
+            setReviewsLoading(true);
+            const response = await fetch(`${API_BASE}/profile/${username}/reviews/`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            setReviews(data);
+        } catch (error) {
+            console.error("Error fetching reviews:", error);
+        } finally {
+            setReviewsLoading(false);
+        }
+    };
+
+    // Function that gets called after a review is successfully submitted
+    const handleReviewSubmitted = () => {
+        fetchReviews(); // Re-fetch reviews after submission
+    };
+    
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -83,8 +108,8 @@ const ProfileView = () => {
                         return { ...album, images: imagesData };
                     })
                 );
-
                 setAlbums(albumsWithImages);
+                await fetchReviews();
 
             } catch (error) {
                 console.error("Error loading profile or albums:", error);
@@ -253,6 +278,52 @@ const ProfileView = () => {
                                         </div>
                                     </DialogContent>
                                 </Dialog>
+
+                                {/* Reviews Section */}
+                                <div className="pt-10">
+                                    {/* Review Panel */}
+                                    <ReviewPanel username={username} onReviewSubmitted={handleReviewSubmitted} />
+
+                                    {/* Reviews Section */}
+                                    <div>
+                                        <h2 className="mt-5 font-semibold">Reviews:</h2>
+                                        {reviewsLoading ? (
+                                            <p>Loading reviews...</p>
+                                        ) : (
+                                            <ul>
+                                                {reviews.map((review, index) => (
+                                                    <li key={index} className="bg-input-card-border rounded p-3 my-2 flex gap-4 items-start">
+                                                        <div className="flex-shrink-0">
+                                                            {review?.reviewer.image && (
+                                                                <Profile img={review?.reviewer.image} size={60} />
+                                                            )}
+                                                        </div>
+                                                        <div>
+                                                            <div className="font-semibold text-sm">
+                                                                {review.reviewer.full_name} on {new Date(review.created_at).toLocaleDateString("en-US", {
+                                                                year: "numeric",
+                                                                month: "long",
+                                                                day: "numeric"
+                                                                })}
+                                                            </div>
+                                                            <div className="flex gap-1">
+                                                                {[1, 2, 3, 4, 5].map((star) => (
+                                                                <span
+                                                                    key={star}
+                                                                    className={`text-lg ${star <= review.rating ? "text-yellow-500" : "text-gray-400"}`}
+                                                                >
+                                                                    ★
+                                                                </span>
+                                                                ))}
+                                                            </div>
+                                                            <div className="text-sm">{review.comment}</div>
+                                                        </div>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

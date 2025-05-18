@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { useSearchParams, useParams } from "react-router-dom";
+import { useSearchParams, useParams, useNavigate } from "react-router-dom";
 
 import { 
   updateProfile, changePassword, fetchUserProfile, 
@@ -15,11 +15,12 @@ import Sidebar from "./Sidebar";
 import { API_BASE, authHeader, authHeader1 } from "../api/config";
 
 const MySettings = ({ notifications, setNotificationBell }) => {
+  console.log("All notifications:", notifications); // 👀 Check here!
+  
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialTab = searchParams.get("tab") || "Account Settings";
   const [selectedItem, setSelectedItem] = useState(initialTab);
-
-  
 
   // Step 2: Function to handle item selection
   useEffect(() => {
@@ -324,11 +325,6 @@ const MySettings = ({ notifications, setNotificationBell }) => {
   };
 
   const [selectedFilter, setSelectedFilter] = useState("None");
-  // const [notifications, setNotifications] = useState([
-  //   { id: 1, text: "Notification 1", read: false, fullDetails: "Details of Notification 1" },
-  //   { id: 2, text: "Notification 2", read: true, fullDetails: "Details of Notification 2" },
-  //   { id: 3, text: "Notification 3", read: false, fullDetails: "Details of Notification 3" },
-  // ]);
   const [selectedNotifications, setSelectedNotifications] = useState([]);
 
   const handleFilterChange = (filter) => {
@@ -347,19 +343,6 @@ const MySettings = ({ notifications, setNotificationBell }) => {
       prev.includes(id) ? prev.filter((notifId) => notifId !== id) : [...prev, id]
     );
   };
-
-  // const handleDelete = () => {
-  //   setNotifications((prev) => prev.filter((notif) => !selectedNotifications.includes(notif.id)));
-  //   setSelectedNotifications([]);
-  // };
-
-  // const handleMarkAsRead = () => {
-  //   setNotifications((prev) =>
-  //     prev.map((notif) =>
-  //       selectedNotifications.includes(notif.id) ? { ...notif, read: true } : notif
-  //     )
-  //   );
-  // };
 
   const handleDelete = () => {
     const updatedNotifications = notifications.filter((notif) => !selectedNotifications.includes(notif.id));
@@ -625,6 +608,7 @@ const MySettings = ({ notifications, setNotificationBell }) => {
                     <select
                       onChange={(e) => handleFilterChange(e.target.value)}
                       value={selectedFilter}
+                      className="highlight-selector p-1 rounded mb-2"
                     >
                       <option value="None">None</option>
                       <option value="All">All</option>
@@ -641,31 +625,30 @@ const MySettings = ({ notifications, setNotificationBell }) => {
                     </>
                   )}
                 </div>
-                <div>
+                <div className="">
                   {notifications.map((notif) => (
                     <div
-                    className={`py-1 flex items-center space-x-3 ${
-                      selectedNotifications.includes(notif.id) ? "bg-blue-200" : "highlight-selector"
-                    }`}
-                    key={notif.id}
-                  >
-                    <input
-                      type="checkbox"
-                      className="form-checkbox h-4 w-4"
-                      checked={selectedNotifications.includes(notif.id)}
-                      onChange={() => handleCheckboxChange(notif.id)}
-                    />
-                    <span
-                      style={{
-                        cursor: "pointer",
-                        textDecoration: notif.is_read ? "line-through" : "none",
-                      }}
-                      onClick={() => alert(notif.message)}
-                      className="pl-2"
+                      className={`py-1 flex items-center space-x-3 border-bottom border-top my-2 ${
+                        selectedNotifications.includes(notif.id) ? "highlight-selector" : ""}`}
+                      key={notif.id}
                     >
-                      {notif.message}
-                    </span>
-                  </div>                  
+                      <input
+                        type="checkbox"
+                        className="form-checkbox h-4 w-4 my-2"
+                        checked={selectedNotifications.includes(notif.id)}
+                        onChange={() => handleCheckboxChange(notif.id)}
+                      />
+                      <span
+                        style={{
+                          cursor: "pointer",
+                          textDecoration: notif.is_read ? "" : "none",
+                        }}
+                        onClick={() => notif.task_id && navigate(`/mytasks/${notif.task_id}`)}
+                        className="pl-2"
+                      >
+                        {notif.message}
+                      </span>
+                    </div>                  
                   ))}
                 </div>
               </div>
@@ -768,7 +751,7 @@ const MySettings = ({ notifications, setNotificationBell }) => {
 
       <div className="container-fluid flex justify-center pb-10">
         <div className="container max-w-6xl pt-3 px-2">
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-x-0 sm:gap-x-2 gap-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-x-0 sm:gap-x-2 gap-y-4 mt-3">
             {/* Sidebar Component */}
             <Sidebar selectedItem={selectedItem} handleSelection={handleSelection} />
             <div className="flex flex-col col-span-4 md:col-span-3 bg-card-border rounded px-5 pt-2">

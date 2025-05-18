@@ -95,9 +95,8 @@ const MyTasks = () => {
             <Hero onTaskAdded={handleTaskAdded} />
 
             <div className="container-fluid flex justify-center">
-                <div className="container max-w-6xl px-2 pt-2 pb-5 bg-card-border-2 mt-5">
-                    <h1 className="pt-2 pb-5 px-2">Task list here</h1>
-
+                <div className="container max-w-6xl px-2 pt-3 pb-5 bg-card-border-2 mt-6">
+                    {/* <h1 className="pt-2 pb-5 px-2">Task list here</h1> */}
                     {tasks.length > 0 && (
                         <div className='flex items-center mb-5 px-2 border-bottom py-2'>
                             <input
@@ -109,7 +108,7 @@ const MyTasks = () => {
                             />
 
                             {selectedTasks.length === 0 ? (
-                                <span className="text-sm">Select All</span>
+                                <span className="">Select All</span>
                             ) : (
                                 <div className=''>
                                     <button
@@ -129,14 +128,14 @@ const MyTasks = () => {
                         <>
                             {/* Table header goes here */}
                             <div className='flex items-center overflow-hidden task-header pb-1'>
-                                <div className="px-4 flex justify-center w-[20px]"></div>
-                                <div className="px-2 flex justify-center sm:w-[120px] text-sm">
+                                <div className="px-4 flex justify-center w-[20px] hideOnMobile"></div>
+                                <div className="px-2 flex justify-center sm:w-[120px]">
                                     <p className='font-bold'>Posted on</p>
                                 </div>
-                                <div className="px-2 flex-grow flex justify-center text-sm">
+                                <div className="px-2 flex-grow flex justify-center">
                                     <p className='font-bold'>Task Title</p>
                                 </div>
-                                <div className="px-2 flex justify-center sm:w-[100px] text-sm">
+                                <div className="px-2 flex justify-center sm:w-[100px]">
                                     <p className='font-bold'>Status</p>
                                 </div>
                             </div>
@@ -157,13 +156,13 @@ const MyTasks = () => {
                                         className="flex-grow flex items-center cursor-pointer py-2"
                                         onClick={() => navigate(`/mytasks/${task.id}`)}
                                     >
-                                        <div className="px-2 flex justify-center sm:w-[120px] text-sm text-start">
+                                        <div className="px-2 flex justify-center sm:w-[120px] text-start">
                                             <p>{new Date(task.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
                                         </div>
-                                        <div className="px-2 flex-grow flex justify-center text-sm">
+                                        <div className="px-2 flex-grow flex justify-center">
                                             <p>{task.task_title}</p>
                                         </div>
-                                        <div className="px-2 flex justify-center sm:w-[100px] text-sm">
+                                        <div className="px-2 flex justify-center sm:w-[100px]">
                                             <p>{task.status.charAt(0).toUpperCase() + task.status.slice(1)}</p>
                                         </div>
                                     </div>

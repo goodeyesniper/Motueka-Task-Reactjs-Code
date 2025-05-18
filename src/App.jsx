@@ -1,7 +1,6 @@
 import './App.css'
 import { Route, Routes } from 'react-router-dom'
 import Home from './components/Home'
-import Navbar from './components/Navbar'
 import BrowseTask from './components/BrowseTask'
 import MySettings from './components/MySettings'
 import ProfileView from './components/ProfileView'
@@ -15,11 +14,18 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { useState, useEffect } from "react";
 import { fetchUserNotifications } from "./api/notifications"; // Import API utility
 import { useLoggedInUser } from './hooks/useLoggedInUser';
+import NavbarMUI from './components/NavbarMUI'
 
 
 function App() {
   const [notificationBell, setNotificationBell] = useState([]);
   const currentUser = useLoggedInUser();
+
+  const fetchNotifications = async () => {
+    if (!currentUser || !currentUser.username) return;
+    const data = await fetchUserNotifications(currentUser.username);
+    setNotificationBell(data);
+  };
 
   // Centralized Notification Fetch
   useEffect(() => {
@@ -27,28 +33,17 @@ function App() {
       console.log("User logged out, no notifications needed.");
       return; // Stop execution early when logged out
     }
-
     if (!currentUser || !currentUser.username) {
       console.warn("Skipping notification fetch: Invalid currentUser");
       return;
     }
-
-    const fetchNotifications = async () => {
-      if (!currentUser || !currentUser.username) {
-        console.warn("Skipping notification fetch: Invalid currentUser");
-        return;
-      }
-      const data = await fetchUserNotifications(currentUser.username);
-      console.log("Global Fetched Notifications:", data);
-      setNotificationBell(data);
-    };
-
     fetchNotifications();
   }, [currentUser]); // Runs whenever `currentUser` changes
   
   return (
     <>
-      <Navbar notifications={notificationBell} />
+      {/* <Navbar notifications={notificationBell} /> */}
+      <NavbarMUI notifications={notificationBell} onNotificationsUpdate={fetchNotifications} />
 
         <Routes>
           <Route path="/" element={<Home />} />

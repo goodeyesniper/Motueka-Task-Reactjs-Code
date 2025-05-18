@@ -1,14 +1,15 @@
 import React, { useState } from "react";
-import axios from "axios";
+import { API_BASE, authHeader1, authHeader } from "../api/config";
 
 const ReviewPanel = ({ username, onReviewSubmitted }) => {
   const [isReviewVisible, setIsReviewVisible] = useState(false);
   const [review, setReview] = useState("");
   const [charCount, setCharCount] = useState(0);
-  const [rating, setRating] = useState(0);
+  const [rating, setRating] = useState(1);
   const [notification, setNotification] = useState("");
 
   const handleReviewSubmit = async () => {
+    console.log("Attempting to submit review..."); // 🔥 Debugging
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -17,47 +18,56 @@ const ReviewPanel = ({ username, onReviewSubmitted }) => {
       return;
     }
 
-    if (review.trim() === "" || rating === 0) {
+    if (review.trim() === "") {
       setNotification("Please provide a review and select a rating.");
       setTimeout(() => setNotification(""), 3000);
       return;
     }
 
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/profile/review/",
-        {
-          username,    // person being reviewed
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(`${API_BASE}/profile/review/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token && token !== "undefined" && {
+            Authorization: `Token ${token}`,
+          }),
+        },
+        body: JSON.stringify({
           rating,
           comment: review,
-        },
-        {
-          headers: {
-            Authorization: `Token ${token}`,
-          },
-        }
-      );
+          username,  // Make sure this is sent from the parent component
+        }),
+      });
 
-      alert(response.data.message);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Error: ${errorData.error || response.statusText}`);
+      }
+
+      const data = await response.json();
+      alert(data.message);
       setReview("");
-      setRating(0);
+      setRating(1);
       setIsReviewVisible(false);
       setNotification("");
 
       if (onReviewSubmitted) {
-        onReviewSubmitted();
+        onReviewSubmitted(); // Re-fetch reviews
       }
     } catch (error) {
-      console.error("Error submitting review:", error.response || error);
-      setNotification(error?.response?.data?.detail || "Failed to submit review.");
+      console.error("Error submitting review:", error);
+      setNotification(error.message || "Failed to submit review.");
     }
-  };
+  }
 
   const isFormValid = review.trim() !== "" && rating > 0;
 
   const handleCancel = () => {
     setReview("");
-    setRating(0);
+    setRating(1);
     setCharCount(0);
     setNotification("");
     setIsReviewVisible(false);
@@ -103,13 +113,13 @@ const ReviewPanel = ({ username, onReviewSubmitted }) => {
             <label className="block font-bold pb-2">Rating: {rating}/5</label>
             <div className="flex flex-wrap gap-2">
               {[1, 2, 3, 4, 5].map((star) => (
-                <button
+                <div
                   key={star}
-                  className={`text-sm custom-btn-container custom-btn ${star <= rating ? "text-yellow-500" : "text-gray-400"}`}
+                  className={`text-lg cursor-pointer ${star <= rating ? "text-yellow-500" : "text-gray-400"}`}
                   onClick={() => setRating(star)}
                 >
                   ★
-                </button>
+                </div>
               ))}
             </div>
           </div>
@@ -117,7 +127,10 @@ const ReviewPanel = ({ username, onReviewSubmitted }) => {
           <div className="grid grid-cols-2 place-content-between pt-10 pb-5">
             <div className="text-start">
               <button
-                onClick={handleReviewSubmit}
+                onClick={() => {
+                    console.log("Submit button clicked!"); // 🔥 Debugging
+                    handleReviewSubmit();
+                }}
                 className={`custom-btn-container custom-btn ${isFormValid ? "bg-green-500 text-white" : "bg-red-500 text-white"}`}
                 disabled={!isFormValid}
               >

@@ -154,7 +154,7 @@ a.navbar-links:hover {
 }
 
 .custom-btn-container {
-    color: #FFF;
+    color: #FFF !important;
     position: relative;
     cursor: pointer;
     border-radius: 15px;
@@ -176,8 +176,8 @@ a.navbar-links:hover {
 }
 
 .custom-btn {
-    background: var(--custom-button);
-    color: white;
+    background: var(--custom-button) !important;
+    color: white !important;
 }
 .custom-btn:hover {
     color: white;

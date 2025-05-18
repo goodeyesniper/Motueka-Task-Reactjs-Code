@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { createTheme, ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 
-
 // Create Context
 const ThemeContext = createContext();
 
@@ -29,7 +28,19 @@ export const ThemeProvider = ({ children }) => {
       fontFamily: "'Montserrat', sans-serif",
     },
     shape: {
-      borderRadius: 10, // Correct placement for border radius
+      borderRadius: 5, // Correct placement for border radius
+    },
+    components: {
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            position: 'relative',
+            borderRadius: '20px',
+            padding: '2px 15px 2px 15px',
+          
+          },
+        },
+      },
     },
   });
 

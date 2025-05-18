@@ -61,7 +61,7 @@
         height: 0;
     }
     to {
-        width: 200px;
+        width: auto;
         height: auto;
     }
 }
@@ -77,6 +77,7 @@
 
 .nav-li-sidebar {
     padding-left: 10px !important;
+    padding-right: 10px !important;
 }
 
 .nav-li-sidebar, .nav-link-sidebar {
