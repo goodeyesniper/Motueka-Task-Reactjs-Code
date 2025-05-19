@@ -10,6 +10,7 @@ import {
 import ImageUploadDialog from "./ImageUploadDialog";
 import AlbumGrid from './AlbumGrid'
 import Hero from './Hero';
+import Footer from "./Footer";
 import Sidebar from "./Sidebar";
 
 import { API_BASE, authHeader, authHeader1 } from "../api/config";
@@ -45,6 +46,10 @@ const MySettings = ({ notifications, setNotificationBell }) => {
     address: "",
     contact_number: "",
     image_url: "https://placehold.co/120x120.png", // Stores user's profile picture URL
+
+    facebook: "",
+    instagram: "",
+    twitter: "",
   });
 
   const [passwordData, setPasswordData] = useState({
@@ -77,6 +82,10 @@ const MySettings = ({ notifications, setNotificationBell }) => {
                 address: userProfile.address || "",
                 contact_number: userProfile.contact_number || "",
                 image_url: userProfile.image_url || "https://placehold.co/120x120.png",
+
+                facebook: userProfile.facebook || "",
+                instagram: userProfile.instagram || "",
+                twitter: userProfile.twitter || "",
             });
 
         } catch (error) {
@@ -115,6 +124,10 @@ const MySettings = ({ notifications, setNotificationBell }) => {
         address: updatedProfile.address || "",
         contact_number: updatedProfile.contact_number || "",
         image_url: updatedProfile.image_url || "https://placehold.co/120x120.png",
+
+        facebook: updatedProfile.facebook || "",
+        instagram: updatedProfile.instagram || "",
+        twitter: updatedProfile.twitter || "",
       });
     } catch (error) {
       setProfileError("Error updating profile.");
@@ -449,16 +462,16 @@ const MySettings = ({ notifications, setNotificationBell }) => {
                     {/* Profile Edit Section */}
                     <div className="flex flex-col pt-10 md:pt-0 col-span-3 md:col-span-2 place-items-center items-start">
                       <p>Name</p>
-                      <input type="text" name="full_name" value={userData.full_name || ""} onChange={handleInputChangeUserData} className="w-3/4 lg:w-2/3 border border-gray-300" />
+                      <input type="text" name="full_name" value={userData.full_name || ""} onChange={handleInputChangeUserData} className="w-full sm:w-3/4 border border-gray-300" />
 
                       <p className="pt-5">Email</p>
-                      <input type="email" name="email" value={userData.email || ""} onChange={handleInputChangeUserData} className="w-3/4 lg:w-2/3 border border-gray-300" />
+                      <input type="email" name="email" value={userData.email || ""} onChange={handleInputChangeUserData} className="w-full sm:w-3/4 border border-gray-300" />
 
                       <p className="pt-5">Date of Birth</p>
                       <input type="date" name="date_of_birth" value={userData.date_of_birth || ""} onChange={handleInputChangeUserData} className="w-1/2 border border-gray-300" />
 
                       <p className="pt-5">Address</p>
-                      <input type="text" name="address" value={userData.address || ""} onChange={handleInputChangeUserData} className="w-3/4 border border-gray-300" />
+                      <input type="text" name="address" value={userData.address || ""} onChange={handleInputChangeUserData} className="w-full sm:w-3/4 border border-gray-300" />
 
                       <p className="pt-5">Contact Number</p>
                         <input 
@@ -472,10 +485,12 @@ const MySettings = ({ notifications, setNotificationBell }) => {
                           inputMode="numeric" // Optimizes for mobile keyboards
                         />
 
-                      <div className="pt-5 flex justify-center sm:justify-start w-full">
-                        <button className="custom-btn-container custom-btn" onClick={handleProfileSave}>Save Changes</button>
-                        {profileError && <p className="text-red-500 text-xs">{profileError}</p>}
-                        {profileSuccessMessage && <p className="text-green-500 text-xs">{profileSuccessMessage}</p>}
+                      <div className="pt-5 flex justify-center sm:justify-start w-full items-center">
+                        <button className="custom-btn-container custom-btn whitespace-nowrap" onClick={handleProfileSave}>Save Changes</button>
+                        <div className="pl-5">
+                          {profileError && <p className="text-red-500 text-xs">{profileError}</p>}
+                          {profileSuccessMessage && <p className="text-green-500 text-xs">{profileSuccessMessage}</p>}
+                        </div>
                       </div>
                     </div>
                 </div>
@@ -491,10 +506,30 @@ const MySettings = ({ notifications, setNotificationBell }) => {
                       <input type="password" name="new_password" value={passwordData.new_password} onChange={handleInputChangePassword} className="w-3/4 lg:w-2/3 border border-gray-300" />
                       <p className="pt-5">Re-enter Password</p>
                       <input type="password" name="confirm_password" value={passwordData.confirm_password} onChange={handleInputChangePassword} className="w-3/4 lg:w-2/3 border border-gray-300" />
-                      <div className="pt-5 pb-10 flex justify-center sm:justify-start w-full">
-                          <button className="custom-btn-container custom-btn" onClick={handlePasswordChange}>Save Changes</button>
+                      <div className="pt-5 flex justify-center sm:justify-start w-full">
+                          <button className="custom-btn-container custom-btn whitespace-nowrap" onClick={handlePasswordChange}>Save Changes</button>
                           {passwordError && <p className="text-red-500 text-xs">{passwordError}</p>}
                           {passwordSuccessMessage && <p className="text-green-500 text-xs">{passwordSuccessMessage}</p>}
+                      </div>
+                    </div>
+                </div>
+                <div className="grid grid-cols-3 gap-2 pt-2 mt-10">
+                    <div className="flex flex-col place-items-center items-start col-span-3 md:col-span-1 pb-3">
+                        <h1 className="font-bold">Social Network</h1>
+                    </div>
+                    <div className="flex flex-col col-span-3 md:col-span-2 place-items-center items-start">
+                      <p>Facebook</p>
+                      <input type="text" name="facebook" value={userData.facebook || ""} onChange={handleInputChangeUserData} className="w-full sm:w-3/4 border border-gray-300" />
+                      <p className="pt-5">Instagram</p>
+                      <input type="text" name="instagram" value={userData.instagram || ""} onChange={handleInputChangeUserData} className="w-full sm:w-3/4 border border-gray-300" />
+                      <p className="pt-5">X (formerly Twitter)</p>
+                      <input type="text" name="twitter" value={userData.twitter || ""} onChange={handleInputChangeUserData} className="w-full sm:w-3/4 border border-gray-300" />
+                      <div className="pt-5 pb-10 flex justify-center sm:justify-start w-full items-center">
+                        <button className="custom-btn-container custom-btn whitespace-nowrap" onClick={handleProfileSave}>Save Changes</button>
+                        <div className="pl-5">
+                          {profileError && <p className="text-red-500 text-xs">{profileError}</p>}
+                          {profileSuccessMessage && <p className="text-green-500 text-xs">{profileSuccessMessage}</p>}
+                        </div>
                       </div>
                     </div>
                 </div>
@@ -760,6 +795,8 @@ const MySettings = ({ notifications, setNotificationBell }) => {
           </div>
         </div>
       </div>
+
+      <Footer />
     </>
   );
 };
