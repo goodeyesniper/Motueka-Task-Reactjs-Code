@@ -53,7 +53,6 @@ function App() {
           <Route path="/browsetask" element={<BrowseTask />} />
           <Route path="/profile/:username" element={<ProfileView />}/>
           <Route path="/profileuser/:username" element={<ProfileUserView />}/>
-
           <Route path="/mysettings" element={<ProtectedRoute><MySettings notifications={notificationBell} setNotificationBell={setNotificationBell} /></ProtectedRoute>} />
           <Route path="/mytasks" element={<MyTasks />} />
           <Route path="/mytasks/:taskId" element={<TaskView setNotificationBell={setNotificationBell} />} />
