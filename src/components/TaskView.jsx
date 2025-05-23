@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useState, useCallback } from 'react';
 import { getLastSeenStatus } from "../utils/lastSeen";
 import LoginRequiredDialog from './LoginRequiredDialog';
-import { useLoggedInUser } from '../hooks/useLoggedInUser';
+import useLoggedInUser from '../hooks/useLoggedInUser';
 import { fetchTaskDetail, fetchOfferDetail, submitOffer, fetchOfferAuthors, assignTask } from '../api/taskViewApi';
 import AssignmentModal from './AssignmentModal';
 import ChatBox from './Chatbox';

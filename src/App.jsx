@@ -13,7 +13,7 @@ import TaskView from './components/TaskView'
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useState, useEffect } from "react";
 import { fetchUserNotifications } from "./api/notifications"; // Import API utility
-import { useLoggedInUser } from './hooks/useLoggedInUser';
+import useLoggedInUser from './hooks/useLoggedInUser';
 import NavbarMUI from './components/NavbarMUI'
 
 

@@ -4,6 +4,7 @@ import { borderRadius, keyframes } from "@mui/system";
 import CloseIcon from "@mui/icons-material/Close";
 import { API_BASE, authHeader1 } from "../api/config";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import Badge from "@mui/material/Badge";
 
 const ChatBox = ({ taskId, currentUser, taskStatus, chattingWith, chattingWithImage }) => {
   const [messages, setMessages] = useState([]);
@@ -14,6 +15,55 @@ const ChatBox = ({ taskId, currentUser, taskStatus, chattingWith, chattingWithIm
   const messagesEndRef = useRef(null);
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [chatMessageCount, setChatMessageCount] = useState(0)
+
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchNewMessageCount();
+    }, 5000);  // Check for updates every 5 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchNewMessageCount = async () => {
+    const response = await fetch(`${API_BASE}/notifications/chat/${taskId}/`, {
+      method: "GET",
+      headers: { ...authHeader1() },
+    });
+    const data = await response.json();
+
+    if (data.length > 0) {
+      setUnreadCount(data.filter((msg) => !msg.is_read && msg.sender_id !== currentUser.id).length);
+      if (!isOpen) return; // Don't fetch full messages unless chat is open
+      fetchMessages();
+    }
+  };
+
+  const markMessagesAsRead = async () => {
+    try {
+      const response = await fetch(`${API_BASE}/notifications/chat/${taskId}/`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          ...authHeader1(),
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to mark messages as read");
+      }
+
+      if (setChatMessageCount) {
+        setChatMessageCount(prev => Math.max(0, prev - unreadCount)); // Prevent negative
+      }
+
+      console.log("✅ Messages marked as read");
+    } catch (error) {
+      console.error("❌ Error marking messages as read:", error);
+    }
   };
 
   const sendMessage = async () => {
@@ -56,9 +106,23 @@ const ChatBox = ({ taskId, currentUser, taskStatus, chattingWith, chattingWithIm
     }
   }, [taskId, taskStatus]);
 
+  useEffect(() => {
+    if (isOpen) {
+      fetchMessages();
+      markMessagesAsRead();
+      setUnreadCount(0);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (isOpen && chatMessageCount > 0) {
+      fetchMessages();
+    }
+  }, [chatMessageCount]);
+
   // New useEffect for scrolling when messages change
   useEffect(() => {
-      scrollToBottom();
+    messagesEndRef.current?.scrollIntoView({ behavior: "instant" }); // ✅ Scrolls instantly
   }, [messages]);
 
   const otherUserMsg = messages.find((msg) => msg.sender_id !== currentUser.id);
@@ -85,6 +149,7 @@ const ChatBox = ({ taskId, currentUser, taskStatus, chattingWith, chattingWithIm
         <IconButton
           onClick={() => {
             setIsOpen(true);
+            setUnreadCount(0);
             setTimeout(scrollToBottom, 100);
           }}
           sx={{
@@ -98,9 +163,11 @@ const ChatBox = ({ taskId, currentUser, taskStatus, chattingWith, chattingWithIm
             "&:hover": { backgroundColor: "#005FCC" },
           }}
         >
-          <Avatar sx={{ bgcolor: "#005FCC" }}>
-            {chattingWith?.charAt(0).toUpperCase()}
-          </Avatar>
+          <Badge badgeContent={unreadCount} color="error" invisible={unreadCount === 0}>
+            <Avatar sx={{ bgcolor: "#005FCC" }}>
+              {chattingWith?.charAt(0).toUpperCase()}
+            </Avatar>
+          </Badge>
         </IconButton>
       )}
 

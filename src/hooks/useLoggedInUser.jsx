@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-export const useLoggedInUser = () => {
+const useLoggedInUser = () => {
     const [loggedInUser, setLoggedInUser] = useState(null);
     const API_BASE = "http://127.0.0.1:8000/api";
   
@@ -18,7 +18,7 @@ export const useLoggedInUser = () => {
   
           const data = await response.json();
           setLoggedInUser(data);
-          console.log('Logged-in user:', data);
+          // console.log('Logged-in user:', data);
         } catch (error) {
           console.error('Error fetching logged-in user:', error);
         }
@@ -29,4 +29,5 @@ export const useLoggedInUser = () => {
   
     return loggedInUser;
   };
-  
+
+export default useLoggedInUser;
