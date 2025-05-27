@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useTheme } from "./ThemeContext"; // Adjust path if needed
+import { useTheme } from "./ThemeContext";
 import NotificationBell from "./NotificationBell";
+import Mail from "./Mail";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
@@ -17,35 +18,16 @@ import Box from "@mui/material/Box";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Badge from "@mui/material/Badge";
 import { Button } from '@mui/material';
+import useLoggedInUser from "../hooks/useLoggedInUser";
+
 
 const NavbarMUI = ({ notifications, onNotificationsUpdate }) => {
-  const isAuthenticated = !!localStorage.getItem("token");
+  const loggedInUser = useLoggedInUser(); 
+  const isAuthenticated = !!loggedInUser; // Convert to boolean
   const { theme, toggleTheme } = useTheme();
-  const [profile, setProfile] = useState({});
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const isSmallScreen = useMediaQuery("(max-width: 767px)");
   const unreadCount = notifications?.filter((n) => !n.is_read).length;
-
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const url = "http://127.0.0.1:8000/api/current-user/";
-        const headers = token ? { Authorization: `Token ${token}` } : {};
-        const response = await fetch(url, { headers });
-
-        if (!response.ok) throw new Error("Failed to fetch user info");
-
-        const data = await response.json();
-        setProfile(data);
-      } catch (err) {
-        console.error("Error fetching profile:", err);
-      }
-    };
-
-    if (isAuthenticated) fetchProfile();
-  }, [isAuthenticated]);
 
   const handleLogout = async () => {
     try {
@@ -87,9 +69,8 @@ const NavbarMUI = ({ notifications, onNotificationsUpdate }) => {
   }
 };
 
-
   return (
-    <div className="navbar-container container-fluid flex justify-center content-center bg-color-container sticky top-0 z-50">
+    <div className="navbar-container container-fluid flex justify-center content-center bg-color-container sticky top-0 z-50 overflow-hidden">
       <div className="container max-w-6xl">
         <AppBar position="static" sx={{ all: "unset" }}>
           <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -100,18 +81,19 @@ const NavbarMUI = ({ notifications, onNotificationsUpdate }) => {
               </IconButton>
             )}
 
-            <Typography variant="h6"><Link to="/" className="font-bold">Motueka Task</Link></Typography>
+            <Typography><Link to="/" className="font-bold text-md sm:text-lg whitespace-nowrap">Motueka Task</Link></Typography>
+  
 
             {/* Navbar Links (Hidden on small screens) */}
             {!isSmallScreen && (
-              <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+              // sx={{ display: "flex", gap: 2, alignItems: "center" }}
+              <Box className="flex gap-x-4 items-center">
                 {isAuthenticated && (
                   <>
                     <Link to="/mytasks" className="navbar-links font-bold">My Tasks</Link>
-                    {profile?.username && <Link to={`/profile/${profile.username}`} className="navbar-links font-bold">My Profile</Link>}
+                    {loggedInUser?.username && <Link to={`/profile/${loggedInUser?.username}`} className="navbar-links font-bold">My Profile</Link>}
                     <Link to="/mysettings" className="navbar-links font-bold">Settings</Link>
                     <Link to="#" className="navbar-links font-bold" onClick={handleLogout}>Logout</Link>
-                    <NotificationBell notifications={notifications} onNotificationsUpdate={onNotificationsUpdate} />
                   </>
                 )}
                 {!isAuthenticated && (
@@ -127,7 +109,18 @@ const NavbarMUI = ({ notifications, onNotificationsUpdate }) => {
             )}
 
             {/* Theme Toggle */}
-            <Switch checked={theme === "dark"} onChange={toggleTheme} sx={{ transform: "scale(0.9)" }} />
+            <Box className="flex justify-center items-center gap-x-0 sm:gap-x-4">
+              {isAuthenticated && (
+                <>
+                  {/* Show Notification Bell + Mail Icon for authenticated users at all screen sizes */}
+                  <Box className="flex justify-center items-center">
+                    <NotificationBell notifications={notifications} onNotificationsUpdate={onNotificationsUpdate} />
+                    <Mail />
+                  </Box>
+                </>
+              )}
+              <Switch checked={theme === "dark"} onChange={toggleTheme} sx={{ transform: "scale(0.9)" }} />
+            </Box>
           </Toolbar>
         </AppBar>
 
@@ -143,7 +136,7 @@ const NavbarMUI = ({ notifications, onNotificationsUpdate }) => {
                         </ListItemButton>
                     </ListItem>
                     <ListItem disablePadding>
-                        <ListItemButton component={Link} to={`/profile/${profile?.username}`} onClick={() => setSidebarOpen(false)}>
+                        <ListItemButton component={Link} to={`/profile/${loggedInUser?.username}`} onClick={() => setSidebarOpen(false)}>
                             <ListItemText primary="My Profile" />
                         </ListItemButton>
                     </ListItem>

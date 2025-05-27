@@ -30,7 +30,7 @@ const Hero = ({ onTaskAdded }) => {
     <>
       {/* for sticky sticky top-13 z-10 */}
       <div className="container-fluid flex justify-center bg-color-container">
-        <div className="container max-w-6xl flex flex-row place-items-start py-2">
+        <div className="container max-w-6xl flex flex-row place-items-start py-2 overflow-hidden">
 
           <button className="m-2 custom-btn-container custom-btn whitespace-nowrap" onClick={isAuthenticated ? handleOpenModal : handleShowWarning}>
             Post a Task

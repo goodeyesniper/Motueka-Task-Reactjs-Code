@@ -5,6 +5,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import { API_BASE, authHeader1 } from "../api/config";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Badge from "@mui/material/Badge";
+import { useChat } from "./ChatContext";
+
 
 const ChatBox = ({ taskId, currentUser, taskStatus, chattingWith, chattingWithImage }) => {
   const [messages, setMessages] = useState([]);
@@ -18,12 +20,14 @@ const ChatBox = ({ taskId, currentUser, taskStatus, chattingWith, chattingWithIm
   };
   const [unreadCount, setUnreadCount] = useState(0);
   const [chatMessageCount, setChatMessageCount] = useState(0)
+  const { fetchUnreadMessageCount } = useChat();
 
+  fetchUnreadMessageCount();
 
   useEffect(() => {
     const interval = setInterval(() => {
       fetchNewMessageCount();
-    }, 5000);  // Check for updates every 5 seconds
+    }, 10000);  // Check for updates every 10 seconds
 
     return () => clearInterval(interval);
   }, []);

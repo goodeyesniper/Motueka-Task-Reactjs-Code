@@ -159,7 +159,7 @@ const BrowseTask = () => {
               </div>
 
               <div className="col-span-3 pt-5 sm:pt-1">
-                <div className='flex justify-between border-bottom items-center pb-2'>
+                <div className='flex justify-between border-bottom items-center pb-2 overflow-hidden'>
                   <p className="text-sm">Posted on: {formatDate(task.created_at)}</p>
                   <div className='px-1 sm:px-5 overflow-hidden'>
                     <button className='custom-btn-container custom-btn' style={{ width: '120px', height: '32px' }} onClick={() => navigate(`/mytasks/${task.id}`)}>Offers</button>
@@ -171,7 +171,7 @@ const BrowseTask = () => {
                     <h1 className='font-bold text-red-500'>{task.status.charAt(0).toUpperCase() + task.status.slice(1)}</h1>
                   </div>
                 </div>
-                <div>
+                <div className='overflow-hidden'>
                   <h4 className="pb-1">Title: &nbsp;
                     <span className='font-bold cursor-pointer' onClick={() => navigate(`/mytasks/${task.id}`)}>{task.task_title}</span>
                   </h4>
@@ -179,16 +179,16 @@ const BrowseTask = () => {
                     <span className='font-bold cursor-pointer' onClick={() => navigate(`/mytasks/${task.id}`)}>{task.task_details}</span>
                   </p>
                 </div>
-                  <div className="grid grid-cols-2 text-sm sm:text-md py-2">
+                  <div className="grid grid-cols-2 text-sm sm:text-md py-2 overflow-hidden">
                     <div className="col-span-2 sm:col-span-1">
                       <div className="pb-1 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 flex-shrink-0" viewBox="0 -960 960 960" fill="#0066A2"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Zm280 240q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-160 0q-17 0-28.5-11.5T280-440q0-17 11.5-28.5T320-480q17 0 28.5 11.5T360-440q0 17-11.5 28.5T320-400Zm320 0q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-160 0q-17 0-28.5-11.5T280-280q0-17 11.5-28.5T320-320q17 0 28.5 11.5T360-280q0 17-11.5 28.5T320-240Zm320 0q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"/></svg> 
-                        <span className='font-bold p-2'>{formatDate(task.date)}</span>
+                        <span className='font-bold p-2 overflow-hidden'>{formatDate(task.date)}</span>
                       </div>
                       <div className="flex items-center pb-1">
                         <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 flex-shrink-0" viewBox="0 -960 960 960" fill="#0066A2"><path d="m612-292 56-56-148-148v-184h-80v216l172 172ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-400Zm0 320q133 0 226.5-93.5T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 133 93.5 226.5T480-160Z"/>
                         </svg>
-                        <span className='font-bold p-2'>
+                        <span className='font-bold p-2 overflow-hidden'>
                           {new Date(`1970-01-01T${task.time_from}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })} 
                           &nbsp; to &nbsp;
                           {new Date(`1970-01-01T${task.time_to}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
@@ -197,7 +197,7 @@ const BrowseTask = () => {
                     </div>
 
                     <div className="col-span-2 sm:col-span-1">
-                      <div className="flex items-center pb-1">
+                      <div className="flex items-center pb-1 overflow-hidden">
                         <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 flex-shrink-0" viewBox="0 -960 960 960" fill="#0066A2"><path d="M480-480q33 0 56.5-23.5T560-560q0-33-23.5-56.5T480-640q-33 0-56.5 23.5T400-560q0 33 23.5 56.5T480-480Zm0 294q122-112 181-203.5T720-552q0-109-69.5-178.5T480-800q-101 0-170.5 69.5T240-552q0 71 59 162.5T480-186Zm0 106Q319-217 239.5-334.5T160-552q0-150 96.5-239T480-880q127 0 223.5 89T800-552q0 100-79.5 217.5T480-80Zm0-480Z"/>
                         </svg>
                         <span className='font-bold p-2'>{task.address}</span>
@@ -215,11 +215,11 @@ const BrowseTask = () => {
                     </div>
                   </div>
 
-                  <p className='border-top pt-2'>Attached Photo:</p>
+                  <p className='border-top pt-2 overflow-hidden'>Attached Photo:</p>
                   {task.image ? (
                       <img src={task.image} alt="Task" className="w-[400px] sm:max-w-full h-auto my-2" />
                   ) : (
-                    <p className='text-sm px-2 py-5'>No photo(s) attached</p>
+                    <p className='text-sm px-2 py-5 overflow-hidden'>No photo(s) attached</p>
                     
                   )}
               </div>

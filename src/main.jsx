@@ -3,16 +3,17 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 
 import { ThemeProvider } from './components/ThemeContext'
+import AppWithUser from './components/AppWithUser'; // new wrapper component
 
 import './index.css'
-import App from './App.jsx'
 
+// Note <App /> has been transferred to AppWithUser.jsx
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <ThemeProvider>
-        <App />
+        <AppWithUser />
       </ThemeProvider>
     </BrowserRouter>
   </StrictMode>,

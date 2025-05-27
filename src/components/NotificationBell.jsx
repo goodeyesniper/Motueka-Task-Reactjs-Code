@@ -12,7 +12,6 @@ import { API_BASE, authHeader1 } from "../api/config";
 import { useNavigate } from "react-router-dom";
 
 
-// Replace this with your actual API call function
 const markNotificationAsRead = async (id) => {
   try {
     await fetch(`${API_BASE}/notifications/${id}/read/`, {
@@ -21,22 +20,13 @@ const markNotificationAsRead = async (id) => {
         "Content-Type": "application/json",
         ...authHeader1(),
       },
-      body: JSON.stringify({}) // ✅ even if the body is empty
+      body: JSON.stringify({}) // even if the body is empty
     });
   } catch (error) {
     console.error("Error marking notification as read:", error);
   }
   
 };
-
-// Transfered to App.jsx for global call
-// const fetchNotifications = async () => {
-//   const response = await fetch(`${API_BASE}/notifications/`, {
-//     headers: authHeader1(),
-//   });
-//   const data = await response.json();
-//   setNotifications(data);
-// };
 
 const NotificationBell = ({ notifications = [], onNotificationsUpdate }) => {
   const [anchorEl, setAnchorEl] = useState(null);
