@@ -15,11 +15,12 @@ import { useState, useEffect } from "react";
 import { fetchUserNotifications } from "./api/notifications"; // Import API utility
 import useLoggedInUser from './hooks/useLoggedInUser';
 import NavbarMUI from './components/NavbarMUI'
+import ChatWrapper from "./components/ChatWrapper";
 
 
-function App() {
+function App({ currentUser }) {
   const [notificationBell, setNotificationBell] = useState([]);
-  const currentUser = useLoggedInUser();
+  // const currentUser = useLoggedInUser();
 
   const fetchNotifications = async () => {
     if (!currentUser || !currentUser.username) return;
@@ -56,6 +57,7 @@ function App() {
           <Route path="/mysettings" element={<ProtectedRoute><MySettings notifications={notificationBell} setNotificationBell={setNotificationBell} /></ProtectedRoute>} />
           <Route path="/mytasks" element={<MyTasks />} />
           <Route path="/mytasks/:taskId" element={<TaskView setNotificationBell={setNotificationBell} />} />
+          <Route path="/chat/:taskId" element={<ChatWrapper />} />
         </Routes>
     </>
   )

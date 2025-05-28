@@ -22,7 +22,10 @@ const ChatBox = ({ taskId, currentUser, taskStatus, chattingWith, chattingWithIm
   const [chatMessageCount, setChatMessageCount] = useState(0)
   const { fetchUnreadMessageCount } = useChat();
 
-  fetchUnreadMessageCount();
+  useEffect(() => {
+    fetchUnreadMessageCount();
+  }, []);
+
 
   useEffect(() => {
     const interval = setInterval(() => {
