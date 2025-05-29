@@ -22,6 +22,8 @@ const TaskView = ({ setNotificationBell }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const isAuthenticated = localStorage.getItem('token') !== null;
 
+    const [taskStatus, setTaskStatus] = useState(null);
+
     useEffect(() => {
         if (taskId) {
             fetchAuthors();
@@ -29,11 +31,10 @@ const TaskView = ({ setNotificationBell }) => {
     }, [taskId]);
 
     useEffect(() => {
-        console.log("THE AUTHORS ARE:", offerAuthors);
     }, [offerAuthors]);
 
     const handleShowWarning = () => {
-        document.activeElement?.blur(); // Remove focus from the triggering element. This removes Blocked aria-hidden on an element error in the console
+        document.activeElement?.blur();
         setLoginDialogOpen(true);
     };
     const handleCloseWarning = () => setLoginDialogOpen(false);
@@ -44,7 +45,6 @@ const TaskView = ({ setNotificationBell }) => {
             if (!taskId) return;
 
             try {
-                console.log("Fetching task with ID:", taskId);
                 const data = await fetchTaskDetail(taskId);
                 setTaskDetail(data);
 
@@ -115,7 +115,7 @@ const TaskView = ({ setNotificationBell }) => {
                 return;
             }
             const updatedTask = await assignTask(taskId, username);
-            console.log("Updated Task:", updatedTask);
+            // console.log("Updated Task:", updatedTask);
 
             const refreshedTask = await fetchTaskDetail(taskId);
             
@@ -255,54 +255,58 @@ const TaskView = ({ setNotificationBell }) => {
                                     <div className='flex justify-between pt-2'>
                                         <h1 className='font-bold'>Offers ({offerAuthors.length})</h1>
                                         <div className='flex overflow-hidden'>
-                                            {taskDetail.assigned_to && 
-                                            (currentUser && (taskDetail.author_username === currentUser.username || taskDetail.assigned_to === currentUser.username)) ? (
-                                                <div>
-                                                    <p className="text-red-600 font-semibold">Assigned to: {
-                                                        offerAuthors.find(a => a.username === taskDetail.assigned_to)?.full_name || taskDetail.assigned_to
-                                                        }
-                                                    </p>
-                                                    {taskDetail.author_username === currentUser.username && (
-                                                        <button
-                                                            onClick={() => handleAssignTask("reset")}
-                                                            className="bg-red-500 text-white px-4 py-2 rounded mt-2"
-                                                        >
-                                                            Re-assign
-                                                        </button>
-                                                    )}
-                                                </div>
-
-                                            ) : taskDetail.status === "open" &&
-                                            (currentUser && (taskDetail.author_username === currentUser.username &&
-                                            offerAuthors.length > 0)) ? (
-                                                <button
-                                                    onClick={() => setIsModalOpen(true)}
-                                                    className="bg-blue-500 text-white px-4 py-2 rounded"
-                                                >
-                                                    Assign Task
-                                                </button>
-                                            ) : null}
+                                            {taskDetail.assigned_to &&
+                                                (currentUser &&
+                                                    (taskDetail.author_username === currentUser.username || taskDetail.assigned_to === currentUser.username)) ? (
+                                                    <div className='flex flex-col items-end'>
+                                                        <p className="text-red-600 font-semibold">
+                                                            Assigned to: {
+                                                                offerAuthors.find(a => a.username === taskDetail.assigned_to)?.full_name || taskDetail.assigned_to
+                                                            }
+                                                        </p>
+                                                        {taskDetail.status !== "closed" && taskDetail.author_username === currentUser.username && (
+                                                            <div>
+                                                                <button
+                                                                    onClick={() => handleAssignTask("reset")}
+                                                                    className="bg-red-500 text-white px-4 py-2 rounded mt-2"
+                                                                >
+                                                                    Re-assign
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ) : taskDetail.status === "open" &&
+                                                (currentUser && taskDetail.author_username === currentUser.username && offerAuthors.length > 0) && taskDetail.status !== "closed" ? (
+                                                    <button
+                                                        onClick={() => setIsModalOpen(true)}
+                                                        className="bg-blue-500 text-white px-4 py-2 rounded"
+                                                    >
+                                                        Assign Task
+                                                    </button>
+                                                ) : null}
 
                                             {taskDetail.status === "assigned" &&
-                                            (currentUser &&
-                                                (taskDetail.author_username === currentUser.username ||
-                                                taskDetail.assigned_to === currentUser.username)) && (
-                                                <ChatBox
-                                                taskId={taskId}
-                                                currentUser={currentUser}
-                                                taskStatus={taskDetail.status}
-                                                chattingWith={
-                                                    taskDetail.assigned_to === currentUser.username
-                                                    ? taskDetail.author_full_name
-                                                    : taskDetail.assigned_to_full_name
-                                                }
-                                                chattingWithImage={
-                                                    taskDetail.assigned_to === currentUser.username
-                                                    ? taskDetail.author_profile_image
-                                                    : taskDetail.assigned_to_profile_image
-                                                }
-                                                />
-                                            )}
+                                                (currentUser &&
+                                                    (taskDetail.author_username === currentUser.username ||
+                                                    taskDetail.assigned_to === currentUser.username)) && (
+                                                    <ChatBox
+                                                    taskId={taskId}
+                                                    currentUser={currentUser}
+                                                    taskStatus={taskDetail.status}
+                                                    setTaskStatus={setTaskStatus}
+                                                    chattingWith={
+                                                        taskDetail.assigned_to === currentUser.username
+                                                        ? taskDetail.author_full_name
+                                                        : taskDetail.assigned_to_full_name
+                                                    }
+                                                    chattingWithImage={
+                                                        taskDetail.assigned_to === currentUser.username
+                                                        ? taskDetail.author_profile_image
+                                                        : taskDetail.assigned_to_profile_image
+                                                    }
+                                                    isAuthor={taskDetail.author_username === currentUser.username}
+                                                    />
+                                                )}
 
                                         </div>
                                     </div>

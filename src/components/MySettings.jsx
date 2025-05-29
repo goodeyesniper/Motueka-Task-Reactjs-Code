@@ -15,9 +15,7 @@ import Sidebar from "./Sidebar";
 
 import { API_BASE, authHeader, authHeader1 } from "../api/config";
 
-const MySettings = ({ notifications, setNotificationBell }) => {
-  console.log("All notifications:", notifications); // 👀 Check here!
-  
+const MySettings = ({ notifications, setNotificationBell }) => {  
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialTab = searchParams.get("tab") || "Account Settings";

@@ -31,7 +31,6 @@ function App({ currentUser }) {
   // Centralized Notification Fetch
   useEffect(() => {
     if (currentUser === null) {
-      console.log("User logged out, no notifications needed.");
       return; // Stop execution early when logged out
     }
     if (!currentUser || !currentUser.username) {

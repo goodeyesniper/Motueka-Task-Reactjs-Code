@@ -100,3 +100,21 @@ export const assignTask = async (taskId, username) => {
 
   return await response.json();
 };
+
+// Close task when done
+export const closeTask = async (taskId) => {
+  const response = await fetch(`${API_BASE}/posts/${taskId}/close/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeader1(),
+    },
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText);
+  }
+
+  return await response.json();
+};

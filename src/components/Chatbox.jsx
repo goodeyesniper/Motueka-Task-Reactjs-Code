@@ -6,9 +6,10 @@ import { API_BASE, authHeader1 } from "../api/config";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Badge from "@mui/material/Badge";
 import { useChat } from "./ChatContext";
+import { closeTask } from '../api/taskViewApi';
+import CloseTaskDialog from "./CloseTaskDialog";
 
-
-const ChatBox = ({ taskId, currentUser, taskStatus, chattingWith, chattingWithImage }) => {
+const ChatBox = ({ taskId, currentUser, taskStatus, setTaskStatus, chattingWith, chattingWithImage, isAuthor }) => {
   const [messages, setMessages] = useState([]);
   const [messageInput, setMessageInput] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -21,11 +22,28 @@ const ChatBox = ({ taskId, currentUser, taskStatus, chattingWith, chattingWithIm
   const [unreadCount, setUnreadCount] = useState(0);
   const [chatMessageCount, setChatMessageCount] = useState(0)
   const { fetchUnreadMessageCount } = useChat();
+  const [openDialog, setOpenDialog] = useState(false);
+  
+  const handleShowWarning = () => {
+    document.activeElement?.blur();
+    setOpenDialog(true);
+  };
+  const handleCloseWarning = () => setOpenDialog(false);
+
+  const handleCloseTask = async () => {
+    try {
+      const response = await closeTask(taskId);
+
+      setTaskStatus("closed"); // Update the UI state
+      console.log("Task closed successfully", response);
+    } catch (error) {
+      console.error("Error closing task:", error);
+    }
+  };
 
   useEffect(() => {
     fetchUnreadMessageCount();
   }, []);
-
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -67,9 +85,9 @@ const ChatBox = ({ taskId, currentUser, taskStatus, chattingWith, chattingWithIm
         setChatMessageCount(prev => Math.max(0, prev - unreadCount)); // Prevent negative
       }
 
-      console.log("✅ Messages marked as read");
+      console.log("Messages marked as read");
     } catch (error) {
-      console.error("❌ Error marking messages as read:", error);
+      console.error("Error marking messages as read:", error);
     }
   };
 
@@ -186,8 +204,8 @@ const ChatBox = ({ taskId, currentUser, taskStatus, chattingWith, chattingWithIm
             bottom: 0,
             right: isSmallScreen ? 0 : 16,
             left: isSmallScreen ? 0 : "auto",
-            width: isSmallScreen ? "100vw" : 330,
-            height: isSmallScreen ? "100vh" : 450,
+            width: isSmallScreen ? "100vw" : 350,
+            height: isSmallScreen ? "100vh" : 500,
             backgroundColor: "white",
             borderRadius: isSmallScreen ? 0 : 2,
             boxShadow: 4,
@@ -218,6 +236,25 @@ const ChatBox = ({ taskId, currentUser, taskStatus, chattingWith, chattingWithIm
               <CloseIcon sx={{ color: "white" }} />
             </IconButton>
           </Box>
+
+          {/* Close task here when it is done */}
+          {isAuthor && (
+            <div className="p-2 highlight-selector">
+              <Box>
+                <div className="flex items-center whitespace-nowrap overflow-hidden">
+                    <Button variant="contained" sx={{ bgcolor: "#e7000b"}} onClick={handleShowWarning}>Close Task</Button>
+                  <p className="px-2">Task done? click here</p>
+                </div>
+              </Box>
+              {/* Render CloseTaskDialog */}
+                <CloseTaskDialog open={openDialog} handleClose={handleCloseWarning} 
+                  handleConfirm={() => {
+                    handleCloseTask();
+                    setIsOpen(false);
+                  }}  
+                />
+            </div>
+          )}
 
             {/* Chat Messages */}
             <Box

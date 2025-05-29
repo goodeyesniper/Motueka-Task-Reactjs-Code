@@ -14,8 +14,6 @@ export async function fetchUserNotifications(username) {
       },
     });
 
-    console.log("API Response:", response.status);
-
     if (!response.ok) {
       throw new Error("Failed to fetch notifications");
     }
