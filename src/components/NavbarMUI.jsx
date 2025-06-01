@@ -74,54 +74,57 @@ const NavbarMUI = ({ notifications, onNotificationsUpdate }) => {
       <div className="container max-w-6xl">
         <AppBar position="static" sx={{ all: "unset" }}>
           <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-            {/* Menu Icon (Shown only on small screens) */}
-            {isSmallScreen && (
-              <IconButton edge="start" color="inherit" aria-label="menu" onClick={() => setSidebarOpen(true)}>
-                <MenuIcon sx={{ fontSize: 30 }} />
-              </IconButton>
-            )}
-
-            <Typography><Link to="/" className="font-bold text-md sm:text-lg whitespace-nowrap">Motueka Task</Link></Typography>
+            <div className="flex items-center gap-x-1">
+              {/* Menu Icon (Shown only on small screens) */}
+              {isSmallScreen && (
+                <IconButton edge="start" color="inherit" aria-label="menu" onClick={() => setSidebarOpen(true)}>
+                  <MenuIcon sx={{ fontSize: 30 }} />
+                </IconButton>
+              )}
+              <Typography><Link to="/" className="font-bold text-md sm:text-lg whitespace-nowrap">Motueka Task</Link></Typography>
+            </div>
   
+            <div className="flex">
+              {/* Navbar Links (Hidden on small screens) */}
+              {!isSmallScreen && (
+                // sx={{ display: "flex", gap: 2, alignItems: "center" }}
+                <Box className="flex gap-x-4 items-center">
+                  {isAuthenticated && (
+                    <>
+                      <Link to="/mytasks" className="navbar-links font-bold">My Tasks</Link>
+                      {loggedInUser?.username && <Link to={`/profile/${loggedInUser?.username}`} className="navbar-links font-bold">My Profile</Link>}
+                      <Link to="/mysettings" className="navbar-links font-bold">Settings</Link>
+                      <Link to="#" className="navbar-links font-bold" onClick={handleLogout}>Logout</Link>
+                    </>
+                  )}
+                  {!isAuthenticated && (
+                    <>
+                      <div className="flex gap-x-5">
+                        <Button component={Link} to="/register" className="custom-btn-container custom-btn px-2">Sign Up</Button>
+                        <Link to="/login" className="navbar-links">Login</Link>
+                      </div>
+                      
+                    </>
+                  )}
+                </Box>
+              )}
 
-            {/* Navbar Links (Hidden on small screens) */}
-            {!isSmallScreen && (
-              // sx={{ display: "flex", gap: 2, alignItems: "center" }}
-              <Box className="flex gap-x-4 items-center">
+              {/* Theme Toggle */}
+              <Box className="flex justify-center items-center gap-x-0 sm:gap-x-4">
                 {isAuthenticated && (
                   <>
-                    <Link to="/mytasks" className="navbar-links font-bold">My Tasks</Link>
-                    {loggedInUser?.username && <Link to={`/profile/${loggedInUser?.username}`} className="navbar-links font-bold">My Profile</Link>}
-                    <Link to="/mysettings" className="navbar-links font-bold">Settings</Link>
-                    <Link to="#" className="navbar-links font-bold" onClick={handleLogout}>Logout</Link>
+                    {/* Show Notification Bell + Mail Icon for authenticated users at all screen sizes */}
+                    <Box className="flex justify-center items-center">
+                      <NotificationBell notifications={notifications} onNotificationsUpdate={onNotificationsUpdate} />
+                      <Mail />
+                    </Box>
                   </>
                 )}
-                {!isAuthenticated && (
-                  <>
-                    <div className="flex gap-x-5">
-                      <Button component={Link} to="/register" className="custom-btn-container custom-btn px-2">Sign Up</Button>
-                      <Link to="/login" className="navbar-links">Login</Link>
-                    </div>
-                    
-                  </>
-                )}
+                <Switch checked={theme === "dark"} onChange={toggleTheme} sx={{ transform: "scale(0.9)" }} />
               </Box>
-            )}
-
-            {/* Theme Toggle */}
-            <Box className="flex justify-center items-center gap-x-0 sm:gap-x-4">
-              {isAuthenticated && (
-                <>
-                  {/* Show Notification Bell + Mail Icon for authenticated users at all screen sizes */}
-                  <Box className="flex justify-center items-center">
-                    <NotificationBell notifications={notifications} onNotificationsUpdate={onNotificationsUpdate} />
-                    <Mail />
-                  </Box>
-                </>
-              )}
-              <Switch checked={theme === "dark"} onChange={toggleTheme} sx={{ transform: "scale(0.9)" }} />
-            </Box>
+            </div>
           </Toolbar>
+          
         </AppBar>
 
         {/* Sidebar (Menu for small screens) */}
