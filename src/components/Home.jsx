@@ -9,6 +9,8 @@ const Home = () => {
     const [isModalOpen, setIsModalOpen] = useState(false); // State to toggle modal visibility
     const [showLoginWarning, setShowLoginWarning] = useState(false);
     const isAuthenticated = localStorage.getItem('token') !== null;
+
+    console.log("API BASE URL:", import.meta.env.VITE_API_BASE_URL_DEPLOY);
     
     const handleShowWarning = () => {
         document.activeElement?.blur(); // Remove focus from the triggering element. This removes Blocked aria-hidden on an element error in the console
