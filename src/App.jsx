@@ -8,7 +8,7 @@ import MyTasks from './components/MyTasks'
 import LoginPage from './components/LoginPage'
 import RegistrationPage from './components/RegistrationPage'
 import ForgotPassword from './components/ForgotPassword'
-import ProfileUserView from './components/ProfileUserView'
+// import ProfileUserView from './components/ProfileUserView'
 import TaskView from './components/TaskView'
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useState, useEffect } from "react";
@@ -52,7 +52,7 @@ function App({ currentUser }) {
           <Route path="forgotpass" element={<ForgotPassword />} />
           <Route path="/browsetask" element={<BrowseTask />} />
           <Route path="/profile/:username" element={<ProfileView />}/>
-          <Route path="/profileuser/:username" element={<ProfileUserView />}/>
+          {/* <Route path="/profileuser/:username" element={<ProfileUserView />}/> */}
           <Route path="/mysettings" element={<ProtectedRoute><MySettings notifications={notificationBell} setNotificationBell={setNotificationBell} /></ProtectedRoute>} />
           <Route path="/mytasks" element={<MyTasks />} />
           <Route path="/mytasks/:taskId" element={<TaskView setNotificationBell={setNotificationBell} />} />

@@ -5,6 +5,8 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import EditIcon from "@mui/icons-material/Edit";
 import { useMediaQuery } from '@mui/material';
 import { useNavigate } from "react-router-dom";
+import { API_BASE, authHeader1 } from "../api/config";
+
 
 const TaskModal = ({ onClose, onTaskAdded }) => {
   const isSmallScreen = useMediaQuery('(max-width:600px)'); // Detect small screens
@@ -98,67 +100,61 @@ const TaskModal = ({ onClose, onTaskAdded }) => {
   const handleConfirmSubmit = async () => {
     setConfirmationOpen(false);
     if (isSubmitting) return; // Prevent duplicates
-    setIsSubmitting(true);    // Lock submission process
+    setIsSubmitting(true); // Lock submission process
 
     try {
-        const token = localStorage.getItem("token");
+      const formData = new FormData();
+      formData.append("task_title", formValues.taskTitle);
+      formData.append("task_details", formValues.taskDetails);
 
-        const formData = new FormData();
-        formData.append('task_title', formValues.taskTitle);
-        formData.append('task_details', formValues.taskDetails);
+      // Optional image upload
+      if (uploadedFile) {
+        formData.append("image", uploadedFile);
+      }
 
-        // Optional image upload
-        if (uploadedFile) {
-          formData.append('image', uploadedFile);
+      formData.append("address", formValues.address);
+      formData.append("date", formValues.date);
+      formData.append("time_from", formValues.timeFrom);
+      formData.append("time_to", formValues.timeTo);
+      formData.append("budget_option", formValues.budgetOption);
+      formData.append("budget_value", formValues.budgetValue || 0);
+
+      const response = await fetch(`${API_BASE}/posts/`, {
+        method: "POST",
+        headers: authHeader1(),
+        body: formData,
+      });
+
+      if (response.ok) {
+        const newTask = await response.json();
+        if (onTaskAdded) {
+          onTaskAdded(newTask);
+        } else {
+          console.error("onTaskAdded is not defined in TaskModal props.");
         }
 
-        formData.append('address', formValues.address);
-        formData.append('date', formValues.date);
-        formData.append('time_from', formValues.timeFrom);
-        formData.append('time_to', formValues.timeTo);
-        formData.append('budget_option', formValues.budgetOption);
-        formData.append('budget_value', formValues.budgetValue || 0);
-
-        const response = await fetch('http://127.0.0.1:8000/api/posts/', {
-            method: 'POST',
-            headers: {
-              Authorization: `Token ${token}`,
-            },
-            body: formData,
+        // Reset form values
+        setFormValues({
+          taskTitle: "",
+          taskDetails: "",
+          address: "",
+          date: "",
+          timeFrom: "",
+          timeTo: "",
+          budgetOption: "",
+          budgetValue: "",
         });
 
-        if (response.ok) {
-            const newTask = await response.json();
-            if (onTaskAdded) {  // Prevents error if undefined
-              onTaskAdded(newTask);
-            } else {
-                console.error("onTaskAdded is not defined in TaskModal props.");
-            }
-      
-            // onTaskAdded(newTask); // Update BrowseTask
-
-            // Reset form values
-            setFormValues({
-              taskTitle: "",
-              taskDetails: "",
-              address: "",
-              date: "",
-              timeFrom: "",
-              timeTo: "",
-              budgetOption: "",
-              budgetValue: "",
-            });
-            setSuccessOpen(true); // Open success dialog
-        } else {
-            console.error('Error submitting task:', response.statusText);
-        }
+        setSuccessOpen(true); // Open success dialog
+      } else {
+        console.error("Error submitting task:", response.statusText);
+      }
     } catch (error) {
-        console.error('Error submitting task:', error);
+      console.error("Error submitting task:", error);
     } finally {
       setIsSubmitting(false); // Unlock submission
     }
   };
-
 
   return (
     <>

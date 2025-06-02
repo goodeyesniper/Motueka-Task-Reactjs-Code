@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Footer from './Footer'
+import { API_BASE } from "../api/config";
 
 
 const RegistrationPage = () => {
@@ -19,16 +20,21 @@ const RegistrationPage = () => {
       setError("Passwords do not match!");
       return;
     }
-  
+
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/register/", {
+      const response = await fetch(`${API_BASE}/register/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, password, confirm_password: confirmPassword }),
+        body: JSON.stringify({
+          username,
+          email,
+          password,
+          confirm_password: confirmPassword,
+        }),
       });
-  
+
       const data = await response.json();
-  
+
       if (response.ok) {
         setSuccess(data.message);
         setUsername("");
@@ -36,14 +42,13 @@ const RegistrationPage = () => {
         setPassword("");
         setConfirmPassword("");
         setError("");
-  
+
         localStorage.setItem("authToken", data.token);
 
         // Wait 2 seconds and navigate to login
         setTimeout(() => {
           navigate("/login");
         }, 2000);
-        
       } else {
         setError(data.error || "Something went wrong.");
       }
@@ -51,7 +56,6 @@ const RegistrationPage = () => {
       setError("Unable to connect to the server.");
     }
   };
-
 
   return (
     <>

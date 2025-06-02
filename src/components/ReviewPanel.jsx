@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { API_BASE, authHeader1, authHeader } from "../api/config";
+import { API_BASE } from "../api/config";
 
 const ReviewPanel = ({ username, onReviewSubmitted }) => {
   const [isReviewVisible, setIsReviewVisible] = useState(false);

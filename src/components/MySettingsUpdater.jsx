@@ -1,9 +1,10 @@
 import axios from "axios";
+import { API_BASE, authHeader } from "../api/config";
 
-const API_BASE = "http://127.0.0.1:8000/api";
-const authHeader = () => ({
-  Authorization: `Token ${localStorage.getItem("token")}`,
-});
+// const API_BASE = "http://127.0.0.1:8000/api";
+// const authHeader = () => ({
+//   Authorization: `Token ${localStorage.getItem("token")}`,
+// });
 
 export const fetchAlbumsWithImages = async () => {
   try {

@@ -19,6 +19,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import Badge from "@mui/material/Badge";
 import { Button } from '@mui/material';
 import useLoggedInUser from "../hooks/useLoggedInUser";
+import { API_BASE, authHeader1 } from "../api/config";
 
 
 const NavbarMUI = ({ notifications, onNotificationsUpdate }) => {
@@ -31,15 +32,14 @@ const NavbarMUI = ({ notifications, onNotificationsUpdate }) => {
 
   const handleLogout = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch("http://127.0.0.1:8000/api/logout/", {
+      const response = await fetch(`${API_BASE}/logout/`, {
         method: "POST",
-        headers: { Authorization: `Token ${token}` },
+        headers: authHeader1(),
       });
 
       if (response.ok) {
-        localStorage.removeItem("token");
-        window.location.href = "/";
+        localStorage.removeItem("token"); // Remove token from localStorage
+        window.location.href = "/"; // Redirect to home page or login page
       } else {
         console.error("Logout failed");
       }
@@ -49,25 +49,23 @@ const NavbarMUI = ({ notifications, onNotificationsUpdate }) => {
   };
 
   const handleMarkAsRead = async () => {
-  try {
-    const token = localStorage.getItem("token");
-    await fetch("http://127.0.0.1:8000/api/notifications/mark-all-read/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Token ${token}`,
-      },
-    });
+    try {
+      await fetch(`${API_BASE}/notifications/mark-all-read/`, {
+        method: "POST",
+        headers: {
+          ...authHeader1(),
+          "Content-Type": "application/json",
+        },
+      });
 
-    // Refresh notifications state
-    await onNotificationsUpdate?.();
-
-  } catch (err) {
-    console.error("Failed to mark notifications as read:", err);
-  } finally {
-    setSidebarOpen(false);
-  }
-};
+      // Refresh notifications state
+      await onNotificationsUpdate?.();
+    } catch (err) {
+      console.error("Failed to mark notifications as read:", err);
+    } finally {
+      setSidebarOpen(false);
+    }
+  };
 
   return (
     <div className="navbar-container container-fluid flex justify-center content-center bg-color-container sticky top-0 z-50 overflow-hidden">

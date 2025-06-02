@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useState, useRef, useEffect } from 'react'
 import { useTheme } from './ThemeContext'; // Adjust path if needed
 import NotificationBell from './NotificationBell'
+import { API_BASE, authHeader1 } from "../api/config";
 
 
 const Navbar = ({ notifications }) => {
@@ -12,52 +13,41 @@ const Navbar = ({ notifications }) => {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const token = localStorage.getItem("token");
-                const url = "http://127.0.0.1:8000/api/current-user/";
-    
-                const headers = token && token !== 'undefined'
-                    ? {
-                        Authorization: `Token ${token}`,
-                    }
-                    : {};
-    
-                const response = await fetch(url, { headers });
-    
-                if (!response.ok) {
-                    throw new Error("Failed to fetch user info");
-                }
-    
-                const data = await response.json();
-                setProfile(data);
+            const response = await fetch(`${API_BASE}/current-user/`, {
+                headers: authHeader1(),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch user info");
+            }
+
+            const data = await response.json();
+            setProfile(data);
             } catch (err) {
-                console.error("Error fetching profile:", err);
+            console.error("Error fetching profile:", err);
             }
         };
-    
+
         if (isAuthenticated) {
             fetchProfile();
         }
     }, [isAuthenticated]);
-    
 
     const handleLogout = async () => {
-        const token = localStorage.getItem("token"); // Retrieve token from localStorage
         try {
-          const response = await fetch("http://127.0.0.1:8000/api/logout/", {
+            const response = await fetch(`${API_BASE}/logout/`, {
             method: "POST",
-            headers: {
-              Authorization: `Token ${token}`, // Pass token in the header for authentication
-            },
-          });
-      
-          if (response.ok) {
+            headers: authHeader1(), // Use dynamic auth headers
+            });
+
+            if (response.ok) {
             localStorage.removeItem("token"); // Remove token from localStorage
             window.location.href = "/"; // Redirect to home page or login page
-          } else {
+            } else {
             console.error("Logout failed");
-          }
+            }
         } catch (err) {
-          console.error("An error occurred while logging out:", err);
+            console.error("An error occurred while logging out:", err);
         }
     };
 

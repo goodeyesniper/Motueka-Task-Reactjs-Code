@@ -1,9 +1,13 @@
-export const API_BASE = "http://127.0.0.1:8000/api";
+const isDevelopment = import.meta.env.MODE === "development";
+
+export const API_BASE = isDevelopment
+  ? import.meta.env.VITE_API_BASE_URL_LOCAL
+  : import.meta.env.VITE_API_BASE_URL_DEPLOY;
 
 export const authHeader = () => {
   const token = localStorage.getItem("token");
   return {
-      Authorization: `Token ${token}`,
+    Authorization: `Token ${token}`,
   };
 };
 
@@ -11,6 +15,6 @@ export const authHeader = () => {
 export const authHeader1 = () => {
   const token = localStorage.getItem("token");
   return token && token !== "undefined"
-      ? { Authorization: `Token ${token}` }
-      : {};
+    ? { Authorization: `Token ${token}` }
+    : {};
 };

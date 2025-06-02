@@ -3,6 +3,7 @@ import Hero from './Hero';
 import Profile from './Profile';
 import { Link, useNavigate } from 'react-router-dom'
 import { getLastSeenStatus } from "../utils/lastSeen";
+import { API_BASE, authHeader1 } from "../api/config";
 
 const BrowseTask = () => {
   const navigate = useNavigate();
@@ -13,83 +14,77 @@ const BrowseTask = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const url = "http://127.0.0.1:8000/api/posts/";  // New API endpoint for posts
-  
-        const headers = token && token !== 'undefined'
-          ? {
-              Authorization: `Token ${token}`,  // Pass token for authenticated users
-            }
-          : {};  // For unauthenticated users, no headers needed
-  
+        const url = `${API_BASE}/posts/`; // Use the centralized API_BASE
+        const headers = authHeader1(); // Utilize the authHeader1 function for authentication handling
+
         const response = await fetch(url, { headers });
-  
+
         if (!response.ok) {
           throw new Error("Failed to fetch posts");
         }
-  
+
         const data = await response.json();
         setTasks(data);
       } catch (err) {
         console.error("Error fetching tasks:", err);
       }
     };
-  
+
     fetchTasks();
   }, []);
-  
+
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token || token === 'undefined') return;
-  
+    const token = localStorage.getItem("token");
+    if (!token || token === "undefined") return;
+
     const updateLastSeen = () => {
-      fetch('http://127.0.0.1:8000/api/current-user/', {
+      fetch(`${API_BASE}/current-user/`, {
         headers: {
-          Authorization: `Token ${token}`,
-          'Content-Type': 'application/json'
+          ...authHeader1(),
+          "Content-Type": "application/json",
         },
       })
-        .then(res => {
+        .then((res) => {
           if (!res.ok) {
-            throw new Error('Failed to fetch current user');
+            throw new Error("Failed to fetch current user");
           }
           return res.json();
         })
-        .then(data => {
+        .then((data) => {
           const username = data?.username;
           if (username) {
-            // Once we have the username, fetch the profile and last seen data
-            fetch(`http://127.0.0.1:8000/api/profile/${username}/`, {
+            // Fetch profile and last seen data
+            fetch(`${API_BASE}/profile/${username}/`, {
               headers: {
-                Authorization: `Token ${token}`,
-                'Content-Type': 'application/json'
+                ...authHeader1(),
+                "Content-Type": "application/json",
               },
             })
-              .then(res => {
+              .then((res) => {
                 if (!res.ok) {
-                  throw new Error('Failed to fetch last seen');
+                  throw new Error("Failed to fetch last seen");
                 }
                 return res.json();
               })
-              .then(seenData => {
+              .then((seenData) => {
                 if (seenData?.last_seen) {
                   setLastSeen(seenData.last_seen);
                 }
               })
-              .catch(error => {
-                console.error('Error fetching last seen:', error);
+              .catch((error) => {
+                console.error("Error fetching last seen:", error);
               });
           }
         })
-        .catch(error => {
-          console.error('Error fetching current user:', error);
+        .catch((error) => {
+          console.error("Error fetching current user:", error);
         });
     };
-  
+
     updateLastSeen();
     const interval = setInterval(updateLastSeen, 60000);
-  
+
     return () => clearInterval(interval);
   }, []);
   

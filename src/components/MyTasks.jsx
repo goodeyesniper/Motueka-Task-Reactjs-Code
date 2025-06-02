@@ -4,6 +4,8 @@ import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/
 import { useNavigate } from 'react-router-dom';
 
 import useLoggedInUser from '../hooks/useLoggedInUser';
+import { API_BASE, authHeader1 } from "../api/config";
+
 
 const MyTasks = () => {
     const navigate = useNavigate();
@@ -15,34 +17,37 @@ const MyTasks = () => {
 
     useEffect(() => {
         const fetchUserTasks = async () => {
-            const token = localStorage.getItem("token");
-            if (!token || !loggedInUser) return;  // Ensure we have user data before fetching
+            if (!loggedInUser) return; // Ensure we have user data before fetching
 
             try {
-                const response = await fetch("http://127.0.0.1:8000/api/posts/", {
-                    method: "GET",
-                    headers: {
-                        "Authorization": `Token ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                });
+            const response = await fetch(`${API_BASE}/posts/`, {
+                method: "GET",
+                headers: {
+                ...authHeader1(),
+                "Content-Type": "application/json",
+                },
+            });
 
-                if (!response.ok) {
-                    throw new Error("Failed to fetch tasks");
-                }
+            if (!response.ok) {
+                throw new Error("Failed to fetch tasks");
+            }
 
-                const data = await response.json();
+            const data = await response.json();
 
-                // Filter tasks to show only those created by the logged-in user
-                const userTasks = data.filter(task => task.author_username === loggedInUser.username);
-                setTasks(userTasks);
+            // Filter tasks to show only those created by the logged-in user
+            const userTasks = data.filter(
+                (task) => task.author_username === loggedInUser.username
+            );
+            setTasks(userTasks);
             } catch (error) {
-                console.error("Error fetching tasks:", error);
+            console.error("Error fetching tasks:", error);
             }
         };
 
         fetchUserTasks();
     }, [loggedInUser]);
+
+
 
     // Function to handle selecting/unselecting tasks
     const toggleTaskSelection = (taskId) => {
@@ -58,19 +63,22 @@ const MyTasks = () => {
 
     // Function to delete selected tasks
     const handleDeleteSelected = async () => {
-        const token = localStorage.getItem("token");
-        if (!token || selectedTasks.length === 0) return;
+        if (selectedTasks.length === 0) return;
 
         try {
-            await Promise.all(selectedTasks.map(async (taskId) => {
-                await fetch(`http://127.0.0.1:8000/api/posts/${taskId}/`, {
-                    method: "DELETE",
-                    headers: { Authorization: `Token ${token}` },
+            await Promise.all(
+            selectedTasks.map(async (taskId) => {
+                await fetch(`${API_BASE}/posts/${taskId}/`, {
+                method: "DELETE",
+                headers: authHeader1(),
                 });
-            }));
+            })
+            );
 
             // Filter out deleted tasks from UI
-            setTasks(prevTasks => prevTasks.filter(task => !selectedTasks.includes(task.id)));
+            setTasks((prevTasks) =>
+            prevTasks.filter((task) => !selectedTasks.includes(task.id))
+            );
             setSelectedTasks([]); // Clear selection after delete
         } catch (error) {
             console.error("Error deleting tasks:", error);
@@ -89,7 +97,6 @@ const MyTasks = () => {
         setIsDialogOpen(false);
     };
 
-      
     return (
         <>
             <Hero onTaskAdded={handleTaskAdded} />
