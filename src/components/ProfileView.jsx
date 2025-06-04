@@ -11,6 +11,7 @@ import { API_BASE, authHeader1 } from "../api/config";
 import { useParams } from "react-router-dom";
 
 const ProfileView = () => {
+    const [tasks, setTasks] = useState([]);
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [lastSeen, setLastSeen] = useState(null);

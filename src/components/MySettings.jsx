@@ -17,6 +17,8 @@ import { API_BASE, authHeader, authHeader1 } from "../api/config";
 
 const MySettings = ({ notifications, setNotificationBell }) => {  
   const navigate = useNavigate();
+  const [tasks, setTasks] = useState([]);
+
   const [searchParams, setSearchParams] = useSearchParams();
   const initialTab = searchParams.get("tab") || "Account Settings";
   const [selectedItem, setSelectedItem] = useState(initialTab);
